@@ -20,6 +20,7 @@ namespace AliceIdentityService.Controllers
 
         public IActionResult Index()
         {
+            _logger.LogInformation("It's in Home/Index");
             return View();
         }
 
