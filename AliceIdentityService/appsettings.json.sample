@@ -1,6 +1,11 @@
 {
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Database=test;Username=cysun;Password=abcd"
+  },
   "Serilog": {
-    "Using": [ "Serilog.Sinks.File" ],
+    "Using": [
+      "Serilog.Sinks.File"
+    ],
     "WriteTo": [
       {
         "Name": "File",
@@ -18,7 +23,9 @@
         "System": "Warning"
       }
     },
-    "Enrich": [ "FromLogContext" ]
+    "Enrich": [
+      "FromLogContext"
+    ]
   },
   "AllowedHosts": "*"
 }
