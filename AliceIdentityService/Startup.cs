@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using AliceIdentityService.Models;
 using AliceIdentityService.Services;
@@ -37,6 +38,7 @@ namespace AliceIdentityService
             services.AddRazorPages();
 
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            var cert = new X509Certificate2(Configuration["Certificate:File"], Configuration["Certificate:Pass"]);
             services.AddIdentityServer(options =>
             {
                 options.Events.RaiseErrorEvents = true;
@@ -54,7 +56,9 @@ namespace AliceIdentityService
                 options.ConfigureDbContext = b => b.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"),
                     sql => sql.MigrationsAssembly(migrationsAssembly));
                 options.EnableTokenCleanup = true;
-            });
+            })
+            .AddSigningCredential(cert)
+            .AddAspNetIdentity<ApplicationUser>();
         }
 
         public void Configure(IApplicationBuilder app)
