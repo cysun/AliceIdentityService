@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using AliceIdentityService.Models;
 using AliceIdentityService.Services;
 using Microsoft.AspNetCore.Identity;
@@ -13,9 +14,13 @@ namespace ConsoleManager
 {
     partial class ConsoleManager
     {
-        private readonly ServiceProvider serviceProvider;
+        const string AdminRoleName = "Administrator";
 
-        public UserManager<ApplicationUser> UserManager => serviceProvider.GetService<UserManager<ApplicationUser>>();
+        readonly ServiceProvider serviceProvider;
+
+        UserManager<ApplicationUser> userManager => serviceProvider.GetService<UserManager<ApplicationUser>>();
+
+        RoleManager<IdentityRole> roleManager => serviceProvider.GetService<RoleManager<IdentityRole>>();
 
         public ConsoleManager()
         {
@@ -27,16 +32,15 @@ namespace ConsoleManager
             var services = new ServiceCollection();
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(config.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<ApplicationUser>().AddEntityFrameworkStores<AppDbContext>();
+            services.AddDefaultIdentity<ApplicationUser>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>();
             serviceProvider = services.BuildServiceProvider();
-
-            var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
-            foreach (var user in userManager.Users)
-                Console.WriteLine(user.UserName);
         }
 
-        public void MainController()
+        public async Task MainControllerAsync()
         {
+            await CheckAdminRoleAsync();
             var done = false;
             do
             {
@@ -44,13 +48,15 @@ namespace ConsoleManager
                 switch (cmd)
                 {
                     case "u":
-                        UsersController();
+                        await UsersControllerAsync();
                         break;
                     case "x":
                         done = true;
                         break;
                 }
             } while (!done);
+
+            serviceProvider.Dispose();
         }
 
         public string MainView()
@@ -73,9 +79,9 @@ namespace ConsoleManager
 
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            (new ConsoleManager()).MainController();
+            await (new ConsoleManager()).MainControllerAsync();
         }
     }
 }

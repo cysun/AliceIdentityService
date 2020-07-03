@@ -2,36 +2,42 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using AliceIdentityService.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace ConsoleManager
 {
     partial class ConsoleManager
     {
-        public void UsersController()
+        public async Task UsersControllerAsync()
         {
             var done = false;
             do
             {
-                var users = UserManager.Users.OrderBy(u => u.UserName).ToList();
+                var users = userManager.Users.OrderBy(u => u.UserName).ToList();
                 var cmd = UsersView(users);
-                if (cmd == "m")
+                switch (cmd)
                 {
-                    done = true;
-                }
-                else
-                {
-                    int index;
-                    bool isNumber = int.TryParse(cmd, out index);
-                    if (isNumber && index < users.Count)
-                        UserView(users[index]);
+                    case "m":
+                        done = true;
+                        break;
+                    case "a":
+                        await AddUserAsync();
+                        break;
+                    default:
+                        int index;
+                        bool isNumber = int.TryParse(cmd, out index);
+                        if (isNumber && index < users.Count)
+                            UserView(users[index]);
+                        break;
                 }
             } while (!done);
         }
 
         public string UsersView(List<ApplicationUser> users)
         {
-            var validChoices = new HashSet<string>() { "m" };
+            var validChoices = new HashSet<string>() { "a", "m" };
             for (int i = 0; i < users.Count; ++i)
                 validChoices.Add(i.ToString());
 
@@ -39,7 +45,8 @@ namespace ConsoleManager
             do
             {
                 Console.Clear();
-                Console.WriteLine($"\t User Management \n");
+                Console.WriteLine("\t User Management \n");
+                Console.WriteLine("\t a) Add a user");
                 Console.WriteLine("\t m) Back to Main Menu");
                 for (int i = 0; i < users.Count; ++i)
                     Console.WriteLine($"\t {i}) {users[i].UserName}");
@@ -54,7 +61,47 @@ namespace ConsoleManager
             Console.Clear();
             Console.WriteLine($"\t User Management - {user.UserName} \n");
             Console.Write("\n Press [Enter] key to go back");
-            Console.ReadLine().ToLower();
+            Console.ReadLine();
+        }
+
+        public async Task AddUserAsync()
+        {
+            Console.Clear();
+            Console.WriteLine("\t Add User \n");
+            Console.Write("\t Username: ");
+            var username = Console.ReadLine();
+            Console.Write("\t Password: ");
+            var password = Console.ReadLine();
+            Console.Write("\t email: ");
+            var email = Console.ReadLine();
+            Console.Write("\t Administrator? [y|n]: ");
+            bool isAdmin = Console.ReadLine().ToLower() == "y";
+            Console.Write("\t Save or Cancel? [s|c] ");
+            var cmd = Console.ReadLine();
+            if (cmd.ToLower() == "s")
+            {
+                var user = new ApplicationUser
+                {
+                    UserName = username,
+                    Email = email
+                };
+                var result = await userManager.CreateAsync(user, password);
+                if (result.Succeeded)
+                {
+                    var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                    await userManager.ConfirmEmailAsync(user, token);
+                    if (isAdmin)
+                        await userManager.AddToRoleAsync(user, AdminRoleName);
+                }
+                else
+                {
+                    Console.WriteLine("\n\t Failed to create the user");
+                    foreach (var error in result.Errors)
+                        Console.WriteLine($"\t {error.Description}");
+                    Console.Write("\n\n\t Press [Enter] key to continue");
+                    Console.ReadLine();
+                }
+            }
         }
     }
 }
