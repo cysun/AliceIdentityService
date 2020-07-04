@@ -19,6 +19,7 @@ namespace ConsoleManager
                 switch (cmd)
                 {
                     case "a":
+                        AddClient();
                         break;
                     case "b":
                         done = true;
@@ -60,6 +61,58 @@ namespace ConsoleManager
             Console.WriteLine($"\t Client Management - {client.ClientId} \n");
             Console.Write("\n Press [Enter] key to go back");
             Console.ReadLine();
+        }
+
+
+        private void AddClient()
+        {
+            Console.Clear();
+            Console.WriteLine("\t Add Client \n");
+            Console.Write("\t Client Id: ");
+            var id = Console.ReadLine();
+            Console.Write("\t Client Name: ");
+            var name = Console.ReadLine();
+            var secret = Guid.NewGuid().ToString().Sha256();
+            Console.Write($"\t Client Secret: {secret} \n");
+
+            var validTypes = new HashSet<string> { "mvc" };
+            string type;
+            do
+            {
+                Console.Write("\t Client Type [mvc]: ");
+                type = Console.ReadLine().ToLower();
+            } while (!validTypes.Contains(type));
+
+            Console.Write("\t Redirect URL: ");
+            var redirectUrl = Console.ReadLine();
+
+            Console.Write("\t Save or Cancel? [s|c] ");
+            var cmd = Console.ReadLine();
+            if (cmd.ToLower() == "s")
+            {
+                var client = new Client
+                {
+                    ClientId = id,
+                    ClientName = name,
+                    ClientSecrets = { new Secret(secret) },
+                    RedirectUris = { redirectUrl },
+                    AllowOfflineAccess = true,
+                    AllowedScopes = { "openid", "profile" }
+                };
+
+                switch (type)
+                {
+                    case "mvc":
+                        client.AllowedGrantTypes = GrantTypes.Code;
+                        break;
+                    default:
+                        Console.WriteLine($"Unsupported client type: {type}");
+                        break;
+                }
+
+                configDbContext.Clients.Add(client.ToEntity());
+                configDbContext.SaveChanges();
+            }
         }
     }
 }
