@@ -19,11 +19,11 @@ namespace ConsoleManager
                 var cmd = UsersView(users);
                 switch (cmd)
                 {
-                    case "m":
-                        done = true;
-                        break;
                     case "a":
                         await AddUserAsync();
+                        break;
+                    case "b":
+                        done = true;
                         break;
                     default:
                         int index;
@@ -37,7 +37,7 @@ namespace ConsoleManager
 
         private string UsersView(List<ApplicationUser> users)
         {
-            var validChoices = new HashSet<string>() { "a", "m" };
+            var validChoices = new HashSet<string>() { "a", "b" };
             for (int i = 0; i < users.Count; ++i)
                 validChoices.Add(i.ToString());
 
@@ -47,7 +47,7 @@ namespace ConsoleManager
                 Console.Clear();
                 Console.WriteLine("\t User Management \n");
                 Console.WriteLine("\t a) Add a user");
-                Console.WriteLine("\t m) Back to Main Menu");
+                Console.WriteLine("\t b) Back to Main Menu\n");
                 for (int i = 0; i < users.Count; ++i)
                     Console.WriteLine($"\t {i}) {users[i].UserName}");
                 Console.Write("\n Pleasse enter your choice: ");

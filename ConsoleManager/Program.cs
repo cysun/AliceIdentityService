@@ -6,6 +6,7 @@ using AliceIdentityService.Models;
 using AliceIdentityService.Services;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Options;
+using IdentityServer4.EntityFramework.Storage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -24,7 +25,7 @@ namespace ConsoleManager
 
         RoleManager<IdentityRole> roleManager => serviceProvider.GetService<RoleManager<IdentityRole>>();
 
-        ConfigurationDbContext<ConfigurationDbContext> configDbContext;
+        ConfigurationDbContext<ConfigurationDbContext> configDbContext => serviceProvider.GetService<ConfigurationDbContext>();
 
         public ConsoleManager()
         {
@@ -39,12 +40,9 @@ namespace ConsoleManager
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>();
+            services.AddConfigurationDbContext(options =>
+                options.ConfigureDbContext = db => db.UseNpgsql(config.GetConnectionString("DefaultConnection")));
             serviceProvider = services.BuildServiceProvider();
-
-            var optionsBuilder2 = new DbContextOptionsBuilder<ConfigurationDbContext>();
-            optionsBuilder2.UseNpgsql(config.GetConnectionString("DefaultConnection"));
-            var ConfigurationDbOptions = optionsBuilder2.Options;
-            configDbContext = new ConfigurationDbContext(ConfigurationDbOptions, new ConfigurationStoreOptions());
         }
 
         public async Task MainControllerAsync()
@@ -61,6 +59,9 @@ namespace ConsoleManager
                     case "u":
                         await UsersControllerAsync();
                         break;
+                    case "c":
+                        ClientsController();
+                        break;
                     case "x":
                         done = true;
                         break;
@@ -68,18 +69,18 @@ namespace ConsoleManager
             } while (!done);
 
             serviceProvider.Dispose();
-            configDbContext.Dispose();
         }
 
         public string MainView()
         {
-            var validChoices = new HashSet<string>() { "u", "x" };
+            var validChoices = new HashSet<string>() { "u", "c", "x" };
             string choice;
             do
             {
                 Console.Clear();
                 Console.WriteLine("\t Main Menu \n");
                 Console.WriteLine("\t u) User Management");
+                Console.WriteLine("\t c) Client Management");
                 Console.WriteLine("\t x) Exit");
                 Console.Write("\n  Pleasse enter your choice: ");
                 choice = Console.ReadLine().ToLower();
