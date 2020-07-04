@@ -4,6 +4,8 @@ using System.IO;
 using System.Threading.Tasks;
 using AliceIdentityService.Models;
 using AliceIdentityService.Services;
+using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +24,8 @@ namespace ConsoleManager
 
         RoleManager<IdentityRole> roleManager => serviceProvider.GetService<RoleManager<IdentityRole>>();
 
+        ConfigurationDbContext<ConfigurationDbContext> configDbContext;
+
         public ConsoleManager()
         {
             var config = new ConfigurationBuilder()
@@ -36,11 +40,18 @@ namespace ConsoleManager
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>();
             serviceProvider = services.BuildServiceProvider();
+
+            var optionsBuilder2 = new DbContextOptionsBuilder<ConfigurationDbContext>();
+            optionsBuilder2.UseNpgsql(config.GetConnectionString("DefaultConnection"));
+            var ConfigurationDbOptions = optionsBuilder2.Options;
+            configDbContext = new ConfigurationDbContext(ConfigurationDbOptions, new ConfigurationStoreOptions());
         }
 
         public async Task MainControllerAsync()
         {
             await CheckAdminRoleAsync();
+            CheckDefaultIdentityResources();
+
             var done = false;
             do
             {
@@ -57,6 +68,7 @@ namespace ConsoleManager
             } while (!done);
 
             serviceProvider.Dispose();
+            configDbContext.Dispose();
         }
 
         public string MainView()

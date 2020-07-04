@@ -8,13 +8,10 @@ namespace ConsoleManager
 {
     partial class ConsoleManager
     {
-        public async Task CheckAdminRoleAsync()
+        private async Task CheckAdminRoleAsync()
         {
             if (!await roleManager.RoleExistsAsync(AdminRoleName))
-            {
                 await roleManager.CreateAsync(new IdentityRole(AdminRoleName));
-                Console.WriteLine("Administrator role created.");
-            }
         }
     }
 }

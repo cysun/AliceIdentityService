@@ -10,7 +10,7 @@ namespace ConsoleManager
 {
     partial class ConsoleManager
     {
-        public async Task UsersControllerAsync()
+        private async Task UsersControllerAsync()
         {
             var done = false;
             do
@@ -35,7 +35,7 @@ namespace ConsoleManager
             } while (!done);
         }
 
-        public string UsersView(List<ApplicationUser> users)
+        private string UsersView(List<ApplicationUser> users)
         {
             var validChoices = new HashSet<string>() { "a", "m" };
             for (int i = 0; i < users.Count; ++i)
@@ -56,7 +56,7 @@ namespace ConsoleManager
             return choice;
         }
 
-        public void UserView(ApplicationUser user)
+        private void UserView(ApplicationUser user)
         {
             Console.Clear();
             Console.WriteLine($"\t User Management - {user.UserName} \n");
@@ -64,7 +64,7 @@ namespace ConsoleManager
             Console.ReadLine();
         }
 
-        public async Task AddUserAsync()
+        private async Task AddUserAsync()
         {
             Console.Clear();
             Console.WriteLine("\t Add User \n");
