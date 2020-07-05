@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 using Serilog;
 
 namespace AliceIdentityService
@@ -45,6 +46,8 @@ namespace AliceIdentityService
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
+                options.UserInteraction.LoginUrl = "/Account/Login";
+                options.UserInteraction.LogoutUrl = "/Account/Logout";
             })
             .AddConfigurationStore(options =>
             {
@@ -57,7 +60,8 @@ namespace AliceIdentityService
                     sql => sql.MigrationsAssembly(migrationsAssembly));
                 options.EnableTokenCleanup = true;
             })
-            .AddSigningCredential(cert)
+            // .AddSigningCredential(cert)
+            .AddDeveloperSigningCredential()
             .AddAspNetIdentity<ApplicationUser>();
         }
 
@@ -66,6 +70,7 @@ namespace AliceIdentityService
             if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                IdentityModelEventSource.ShowPII = true;
             }
             else
             {

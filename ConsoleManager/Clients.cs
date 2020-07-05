@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using IdentityServer4;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
 
@@ -72,7 +73,7 @@ namespace ConsoleManager
             var id = Console.ReadLine();
             Console.Write("\t Client Name: ");
             var name = Console.ReadLine();
-            var secret = Guid.NewGuid().ToString().Sha256();
+            var secret = Guid.NewGuid().ToString();
             Console.Write($"\t Client Secret: {secret} \n");
 
             var validTypes = new HashSet<string> { "mvc" };
@@ -94,10 +95,13 @@ namespace ConsoleManager
                 {
                     ClientId = id,
                     ClientName = name,
-                    ClientSecrets = { new Secret(secret) },
+                    ClientSecrets = { new Secret(secret.Sha256()) },
                     RedirectUris = { redirectUrl },
                     AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile" }
+                    AllowedScopes = {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile
+                    }
                 };
 
                 switch (type)
