@@ -60,8 +60,7 @@ namespace AliceIdentityService
                     sql => sql.MigrationsAssembly(migrationsAssembly));
                 options.EnableTokenCleanup = true;
             })
-            // .AddSigningCredential(cert)
-            .AddDeveloperSigningCredential()
+            .AddSigningCredential(cert)
             .AddAspNetIdentity<ApplicationUser>();
         }
 
@@ -70,7 +69,6 @@ namespace AliceIdentityService
             if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                IdentityModelEventSource.ShowPII = true;
             }
             else
             {

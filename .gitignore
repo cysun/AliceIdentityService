@@ -344,3 +344,6 @@ appsettings.json
 Migrations/
 deploy.sh
 .vscode/
+*.crt
+*.key
+*.jwk
