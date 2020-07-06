@@ -6,8 +6,8 @@ and [IdentityServer4](http://docs.identityserver.io/en/latest/index.html).
 
 ## Create Signing Certificate
 
-    openssl req -x509 -newkey rsa:4096 -sha256 -keyout AliceIdService.key -out AliceIdService.crt -days 3650
-    openssl pkcs12 -export -out AliceIdService.pfx -inkey AliceIdService.key -in AliceIdService.crt -certfile AliceIdService.crt
+    openssl req -new -x509 -nodes -newkey rsa:4096 -sha256 -keyout ais.key -out ais.crt -days 3650
+    openssl pkcs12 -export -out ais.pfx -inkey ais.key -in ais.crt
 
 ## Generate DB Scripts
 
