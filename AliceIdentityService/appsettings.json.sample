@@ -1,10 +1,19 @@
 {
+  "Application": {
+    "Url": "http://localhost:5000",
+    "PathBase": "/"
+  },
   "Certificate": {
     "File": "AliceIdService.pfx",
     "Pass": "1234"
   },
   "ConnectionStrings": {
     "DefaultConnection": "Host=localhost;Database=ais;Username=cysun;Password=abcd"
+  },
+  "SendGrid": {
+    "SenderName": "Alice Identity Service",
+    "SenderEmail": "identity@cysun.org",
+    "ApiKey": "1234"
   },
   "Serilog": {
     "Using": [

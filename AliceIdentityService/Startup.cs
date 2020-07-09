@@ -9,6 +9,7 @@ using AliceIdentityService.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -63,6 +64,8 @@ namespace AliceIdentityService
             })
             .AddSigningCredential(cert)
             .AddAspNetIdentity<ApplicationUser>();
+
+            services.AddTransient<IEmailSender, EmailSender>();
         }
 
         public void Configure(IApplicationBuilder app)

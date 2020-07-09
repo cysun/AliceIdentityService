@@ -4,4 +4,14 @@
     ViewData["Title"] = "Confirm email";
 }
 
-<h1>@ViewData["Title"]</h1>
+@if (Model.EmailConfirmed)
+{
+    <p class="lead">
+        Thank you for confirming your email.
+        Please click <a href="~/Account/Login">here</a> to log in.
+    </p>
+}
+else
+{
+    <p class="lead text-danger">Sorry we are not able to confirm your email.</p>
+}

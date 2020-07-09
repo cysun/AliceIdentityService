@@ -68,12 +68,10 @@ namespace ConsoleManager
         {
             Console.Clear();
             Console.WriteLine("\t Add User \n");
-            Console.Write("\t Username: ");
-            var username = Console.ReadLine();
-            Console.Write("\t Password: ");
-            var password = Console.ReadLine();
             Console.Write("\t email: ");
             var email = Console.ReadLine();
+            Console.Write("\t Password: ");
+            var password = Console.ReadLine();
             Console.Write("\t Administrator? [y|n]: ");
             bool isAdmin = Console.ReadLine().ToLower() == "y";
             Console.Write("\t Save or Cancel? [s|c] ");
@@ -82,7 +80,7 @@ namespace ConsoleManager
             {
                 var user = new ApplicationUser
                 {
-                    UserName = username,
+                    UserName = email,
                     Email = email
                 };
                 var result = await userManager.CreateAsync(user, password);
