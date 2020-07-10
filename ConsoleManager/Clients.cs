@@ -87,10 +87,36 @@ namespace ConsoleManager
             Console.Write("\t Redirect URL: ");
             var redirectUrl = Console.ReadLine();
 
+            Console.Write("\t Identity Resources Scope (Enter for none): ");
+            var scope = Console.ReadLine();
+            var claims = new List<string>();
+            if (!string.IsNullOrEmpty(scope))
+            {
+                do
+                {
+                    Console.Write("\t\t Add Claim (e to end): ");
+                    var claim = Console.ReadLine().ToLower();
+                    if (claim != "e")
+                        claims.Add(claim);
+                    else
+                        break;
+                } while (true);
+            }
+
             Console.Write("\t Save or Cancel? [s|c] ");
             var cmd = Console.ReadLine();
             if (cmd.ToLower() == "s")
             {
+                if (!string.IsNullOrEmpty(scope))
+                {
+                    configDbContext.IdentityResources.Add(new IdentityResource
+                    {
+                        Name = scope,
+                        UserClaims = claims,
+                        DisplayName = $"Identity Resource for {name}"
+                    }.ToEntity());
+                }
+
                 var client = new Client
                 {
                     ClientId = id,
@@ -100,9 +126,11 @@ namespace ConsoleManager
                     AllowOfflineAccess = true,
                     AllowedScopes = {
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email
                     }
                 };
+                if (!string.IsNullOrEmpty(scope)) client.AllowedScopes.Add(scope);
 
                 switch (type)
                 {

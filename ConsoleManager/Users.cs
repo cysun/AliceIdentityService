@@ -29,7 +29,7 @@ namespace ConsoleManager
                         int index;
                         bool isNumber = int.TryParse(cmd, out index);
                         if (isNumber && index < users.Count)
-                            UserView(users[index]);
+                            await UserViewAsync(users[index]);
                         break;
                 }
             } while (!done);
@@ -56,12 +56,26 @@ namespace ConsoleManager
             return choice;
         }
 
-        private void UserView(ApplicationUser user)
+        private async Task UserViewAsync(ApplicationUser user)
         {
             Console.Clear();
             Console.WriteLine($"\t User Management - {user.UserName} \n");
-            Console.Write("\n Press [Enter] key to go back");
-            Console.ReadLine();
+            var claims = await userManager.GetClaimsAsync(user);
+            foreach (var claim in claims)
+                Console.WriteLine($"\t\t {claim.Type}: {claim.Value}");
+
+            Console.Write("\n\t Add a claim? [y|n] ");
+            var ans = Console.ReadLine().ToLower();
+            while (ans == "y")
+            {
+                Console.Write("\t Claim Type: ");
+                var claimType = Console.ReadLine();
+                Console.Write("\t Claim Value: ");
+                var claimValue = Console.ReadLine();
+                await userManager.AddClaimAsync(user, new System.Security.Claims.Claim(claimType, claimValue));
+                Console.Write("\t Add another claim? [y|n] ");
+                ans = Console.ReadLine().ToLower();
+            }
         }
 
         private async Task AddUserAsync()
