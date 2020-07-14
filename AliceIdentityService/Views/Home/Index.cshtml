@@ -1,10 +1,12 @@
-
-<div class="jumbotron">
-    <p class="lead">
-        Alice Identity Service is part of the
-        <a href="https://csns.calstatela.edu/wiki/content/cysun/alice/">Alice Project</a>. It handles
-        user management and Single Sign-On (SSO) for the other services.
-    </p>
-    <a class="btn btn-primary btn-lg mr-3" href="~/Identity/Account/Register" role="button">Register</a>
-    <a class="btn btn-primary btn-lg" href="~/Account/Login" role="button">Login</a>
-</div>
+@if (!User.Identity.IsAuthenticated)
+{
+    <div class="jumbotron">
+        <p class="lead">
+            Alice Identity Service is part of the
+            <a href="https://csns.calstatela.edu/wiki/content/cysun/alice/">Alice Project</a>. It handles
+            user management and Single Sign-On (SSO) for the other services.
+        </p>
+        <a class="btn btn-primary btn-lg mr-3" href="~/Identity/Account/Register" role="button">Register</a>
+        <a class="btn btn-primary btn-lg" href="~/Account/Login" role="button">Login</a>
+    </div>
+}

@@ -28,6 +28,9 @@ CREATE TABLE "AspNetUsers" (
     "LockoutEnd" timestamp with time zone NULL,
     "LockoutEnabled" boolean NOT NULL,
     "AccessFailedCount" integer NOT NULL,
+    "FirstName" character varying(255) NULL,
+    "LastName" character varying(255) NULL,
+    "Nickname" character varying(50) NULL,
     CONSTRAINT "PK_AspNetUsers" PRIMARY KEY ("Id")
 );
 
@@ -90,5 +93,5 @@ CREATE INDEX "EmailIndex" ON "AspNetUsers" ("NormalizedEmail");
 CREATE UNIQUE INDEX "UserNameIndex" ON "AspNetUsers" ("NormalizedUserName");
 
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20200625055210_InitialSchema', '3.1.5');
+VALUES ('20200714003849_InitialSchema', '3.1.5');
 

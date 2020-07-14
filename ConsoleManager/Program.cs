@@ -17,13 +17,9 @@ namespace ConsoleManager
 {
     partial class ConsoleManager
     {
-        const string AdminRoleName = "Administrator";
-
         readonly ServiceProvider serviceProvider;
 
         UserManager<ApplicationUser> userManager => serviceProvider.GetService<UserManager<ApplicationUser>>();
-
-        RoleManager<IdentityRole> roleManager => serviceProvider.GetService<RoleManager<IdentityRole>>();
 
         ConfigurationDbContext<ConfigurationDbContext> configDbContext => serviceProvider.GetService<ConfigurationDbContext>();
 
@@ -38,7 +34,6 @@ namespace ConsoleManager
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(config.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<ApplicationUser>()
-                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>();
             services.AddConfigurationDbContext(options =>
                 options.ConfigureDbContext = db => db.UseNpgsql(config.GetConnectionString("DefaultConnection")));
@@ -47,7 +42,6 @@ namespace ConsoleManager
 
         public async Task MainControllerAsync()
         {
-            await CheckAdminRoleAsync();
             CheckDefaultIdentityResources();
 
             var done = false;

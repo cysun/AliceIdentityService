@@ -65,6 +65,11 @@ namespace AliceIdentityService
             .AddSigningCredential(cert)
             .AddAspNetIdentity<ApplicationUser>();
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("IsAdmin", policy => policy.RequireClaim("ais_admin", "true"));
+            });
+
             services.AddTransient<IEmailSender, EmailSender>();
         }
 

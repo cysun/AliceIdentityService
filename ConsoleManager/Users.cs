@@ -10,6 +10,8 @@ namespace ConsoleManager
 {
     partial class ConsoleManager
     {
+        const string AdminClaimType = "ais_admin";
+
         private async Task UsersControllerAsync()
         {
             var done = false;
@@ -82,7 +84,11 @@ namespace ConsoleManager
         {
             Console.Clear();
             Console.WriteLine("\t Add User \n");
-            Console.Write("\t email: ");
+            Console.Write("\t First Name: ");
+            var firstName = Console.ReadLine();
+            Console.Write("\t Last Name: ");
+            var lastName = Console.ReadLine();
+            Console.Write("\t Email: ");
             var email = Console.ReadLine();
             Console.Write("\t Password: ");
             var password = Console.ReadLine();
@@ -95,7 +101,10 @@ namespace ConsoleManager
                 var user = new ApplicationUser
                 {
                     UserName = email,
-                    Email = email
+                    Email = email,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    Nickname = firstName
                 };
                 var result = await userManager.CreateAsync(user, password);
                 if (result.Succeeded)
@@ -103,7 +112,7 @@ namespace ConsoleManager
                     var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
                     await userManager.ConfirmEmailAsync(user, token);
                     if (isAdmin)
-                        await userManager.AddToRoleAsync(user, AdminRoleName);
+                        await userManager.AddClaimAsync(user, new System.Security.Claims.Claim(AdminClaimType, "true"));
                 }
                 else
                 {
