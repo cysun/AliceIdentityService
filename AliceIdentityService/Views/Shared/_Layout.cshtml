@@ -19,26 +19,28 @@
             @if (User.Identity.IsAuthenticated)
             {
                 var name = User.GetDisplayName();
-                @if ((await AuthorizationService.AuthorizeAsync(User, "IsAdmin")).Succeeded)
-                {
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
-                        <li class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Manage </a>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="#">Clients</a>
-                                <a class="dropdown-item" href="#">Users</a>
-                            </div>
+                        @if ((await AuthorizationService.AuthorizeAsync(User, "IsAdmin")).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Clients</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Users</a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link" href="~/Identity/Account/Manage">Account</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Logout">Logout</a>
                         </li>
                     </ul>
-                }
-                <ul class="navbar-nav navbar-right">
-                    <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">@name </a>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" asp-controller="Account" asp-action="Logout">Logout</a>
-                        </div>
-                    </li>
-                </ul>
+                </div>
             }
         </nav>
     </div>

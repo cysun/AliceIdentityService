@@ -33,6 +33,18 @@ namespace AliceIdentityService.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
+            [Required]
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+
+            [Required]
+            [Display(Name = "Lsst Name")]
+            public string LastName { get; set; }
+
+            [Required]
+            [Display(Name = "Display Name")]
+            public string Nickname { get; set; }
+
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
@@ -40,14 +52,17 @@ namespace AliceIdentityService.Areas.Identity.Pages.Account.Manage
 
         private async Task LoadAsync(ApplicationUser user)
         {
-            var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            //var userName = await _userManager.GetUserNameAsync(user);
+            //var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
-            Username = userName;
+            Username = user.UserName;
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Nickname = user.Nickname,
+                PhoneNumber = user.PhoneNumber
             };
         }
 
@@ -75,6 +90,16 @@ namespace AliceIdentityService.Areas.Identity.Pages.Account.Manage
             {
                 await LoadAsync(user);
                 return Page();
+            }
+
+            user.FirstName = Input.FirstName;
+            user.LastName = Input.LastName;
+            user.Nickname = Input.Nickname;
+            var saveUserResult = await _userManager.UpdateAsync(user);
+            if (!saveUserResult.Succeeded)
+            {
+                StatusMessage = "Unexpected error when trying to save user information.";
+                return RedirectToPage();
             }
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
