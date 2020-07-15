@@ -65,12 +65,18 @@ namespace AliceIdentityService
             .AddSigningCredential(cert)
             .AddAspNetIdentity<ApplicationUser>();
 
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.AccessDeniedPath = "/Account/AccessDenied";
+            });
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("IsAdmin", policy => policy.RequireClaim("ais_admin", "true"));
             });
 
             services.AddTransient<IEmailSender, EmailSender>();
+            services.AddScoped<ClientService>();
         }
 
         public void Configure(IApplicationBuilder app)
