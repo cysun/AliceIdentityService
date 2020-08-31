@@ -5,16 +5,19 @@ using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using AliceIdentityService.Models;
+using AliceIdentityService.Security;
 using AliceIdentityService.Services;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
+using SciCAFE.NET.Services;
 using Serilog;
 
 namespace AliceIdentityService
@@ -34,11 +37,11 @@ namespace AliceIdentityService
         {
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<AppDbContext>();
+            services.AddIdentity<User, IdentityRole>(options => options.SignIn.RequireConfirmedEmail = true)
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
 
             services.AddControllersWithViews();
-            services.AddRazorPages();
 
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             var cert = new X509Certificate2(Configuration["Certificate:File"], Configuration["Certificate:Pass"]);
@@ -63,7 +66,7 @@ namespace AliceIdentityService
                 options.EnableTokenCleanup = true;
             })
             .AddSigningCredential(cert)
-            .AddAspNetIdentity<ApplicationUser>();
+            .AddAspNetIdentity<User>();
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -72,10 +75,15 @@ namespace AliceIdentityService
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("IsAdmin", policy => policy.RequireClaim("ais_admin", "true"));
+                options.AddPolicy(Policy.IsAdministrator, policy => policy.RequireClaim(ClaimType.IsAdministrator, "true"));
             });
 
-            services.AddTransient<IEmailSender, EmailSender>();
+            services.AddAutoMapper(config => config.AddProfile<MapperProfile>());
+
+            services.Configure<EmailSettings>(Configuration.GetSection("Email"));
+            services.AddScoped<EmailSender>();
+
+            services.AddScoped<UserService>();
             services.AddScoped<ClientService>();
         }
 
@@ -104,7 +112,6 @@ namespace AliceIdentityService
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

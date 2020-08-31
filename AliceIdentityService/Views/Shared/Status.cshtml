@@ -1,0 +1,16 @@
+﻿@model StatusViewModel
+@{
+    ViewData["Title"] = "Status";
+}
+@if (Model.IsError)
+{
+    <div class="alert alert-danger" role="alert">
+        @Model.Message
+    </div>
+}
+else
+{
+    <div class="alert alert-info" role="alert">
+        @Model.Message
+    </div>
+}

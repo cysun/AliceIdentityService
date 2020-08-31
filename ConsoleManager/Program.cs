@@ -19,7 +19,7 @@ namespace ConsoleManager
     {
         readonly ServiceProvider serviceProvider;
 
-        UserManager<ApplicationUser> userManager => serviceProvider.GetService<UserManager<ApplicationUser>>();
+        UserManager<User> userManager => serviceProvider.GetService<UserManager<User>>();
 
         ConfigurationDbContext<ConfigurationDbContext> configDbContext => serviceProvider.GetService<ConfigurationDbContext>();
 
@@ -31,10 +31,12 @@ namespace ConsoleManager
                 .Build();
 
             var services = new ServiceCollection();
+            services.AddOptions().AddLogging();
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(config.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<ApplicationUser>()
-                .AddEntityFrameworkStores<AppDbContext>();
+            services.AddIdentity<User, IdentityRole>(options => options.SignIn.RequireConfirmedEmail = true)
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
             services.AddConfigurationDbContext(options =>
                 options.ConfigureDbContext = db => db.UseNpgsql(config.GetConnectionString("DefaultConnection")));
             serviceProvider = services.BuildServiceProvider();

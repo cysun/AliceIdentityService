@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AliceIdentityService.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using AliceIdentityService.Security;
 
 namespace ConsoleManager
 {
     partial class ConsoleManager
     {
-        const string AdminClaimType = "ais_admin";
-
         private async Task UsersControllerAsync()
         {
             var done = false;
@@ -37,7 +34,7 @@ namespace ConsoleManager
             } while (!done);
         }
 
-        private string UsersView(List<ApplicationUser> users)
+        private string UsersView(List<User> users)
         {
             var validChoices = new HashSet<string>() { "a", "b" };
             for (int i = 0; i < users.Count; ++i)
@@ -58,7 +55,7 @@ namespace ConsoleManager
             return choice;
         }
 
-        private async Task UserViewAsync(ApplicationUser user)
+        private async Task UserViewAsync(User user)
         {
             Console.Clear();
             Console.WriteLine($"\t User Management - {user.UserName} \n");
@@ -98,13 +95,14 @@ namespace ConsoleManager
             var cmd = Console.ReadLine();
             if (cmd.ToLower() == "s")
             {
-                var user = new ApplicationUser
+                var user = new User
                 {
                     UserName = email,
                     Email = email,
                     FirstName = firstName,
                     LastName = lastName,
-                    Nickname = firstName
+                    Nickname = firstName,
+                    IsAdministrator = isAdmin
                 };
                 var result = await userManager.CreateAsync(user, password);
                 if (result.Succeeded)
@@ -112,7 +110,8 @@ namespace ConsoleManager
                     var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
                     await userManager.ConfirmEmailAsync(user, token);
                     if (isAdmin)
-                        await userManager.AddClaimAsync(user, new System.Security.Claims.Claim(AdminClaimType, "true"));
+                        await userManager.AddClaimAsync(user,
+                            new System.Security.Claims.Claim(ClaimType.IsAdministrator, "true"));
                 }
                 else
                 {

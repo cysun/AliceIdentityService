@@ -28,9 +28,10 @@ CREATE TABLE "AspNetUsers" (
     "LockoutEnd" timestamp with time zone NULL,
     "LockoutEnabled" boolean NOT NULL,
     "AccessFailedCount" integer NOT NULL,
-    "FirstName" character varying(255) NULL,
-    "LastName" character varying(255) NULL,
-    "Nickname" character varying(50) NULL,
+    "FirstName" character varying(255) NOT NULL,
+    "LastName" character varying(255) NOT NULL,
+    "Nickname" character varying(50) NOT NULL,
+    "IsAdministrator" boolean NOT NULL,
     CONSTRAINT "PK_AspNetUsers" PRIMARY KEY ("Id")
 );
 
@@ -53,8 +54,8 @@ CREATE TABLE "AspNetUserClaims" (
 );
 
 CREATE TABLE "AspNetUserLogins" (
-    "LoginProvider" character varying(128) NOT NULL,
-    "ProviderKey" character varying(128) NOT NULL,
+    "LoginProvider" text NOT NULL,
+    "ProviderKey" text NOT NULL,
     "ProviderDisplayName" text NULL,
     "UserId" text NOT NULL,
     CONSTRAINT "PK_AspNetUserLogins" PRIMARY KEY ("LoginProvider", "ProviderKey"),
@@ -71,8 +72,8 @@ CREATE TABLE "AspNetUserRoles" (
 
 CREATE TABLE "AspNetUserTokens" (
     "UserId" text NOT NULL,
-    "LoginProvider" character varying(128) NOT NULL,
-    "Name" character varying(128) NOT NULL,
+    "LoginProvider" text NOT NULL,
+    "Name" text NOT NULL,
     "Value" text NULL,
     CONSTRAINT "PK_AspNetUserTokens" PRIMARY KEY ("UserId", "LoginProvider", "Name"),
     CONSTRAINT "FK_AspNetUserTokens_AspNetUsers_UserId" FOREIGN KEY ("UserId") REFERENCES "AspNetUsers" ("Id") ON DELETE CASCADE
@@ -93,5 +94,5 @@ CREATE INDEX "EmailIndex" ON "AspNetUsers" ("NormalizedEmail");
 CREATE UNIQUE INDEX "UserNameIndex" ON "AspNetUsers" ("NormalizedUserName");
 
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20200714003849_InitialSchema', '3.1.5');
+VALUES ('20200830232015_InitialSchema', '3.1.7');
 

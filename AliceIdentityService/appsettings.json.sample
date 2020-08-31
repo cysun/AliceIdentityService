@@ -10,10 +10,15 @@
   "ConnectionStrings": {
     "DefaultConnection": "Host=localhost;Database=ais;Username=cysun;Password=abcd"
   },
-  "SendGrid": {
-    "SenderName": "Alice Identity Service",
-    "SenderEmail": "identity@cysun.org",
-    "ApiKey": "1234"
+  "Email": {
+    "AppUrl": "http://localhost:5000",
+    "Host": "localhost",
+    "Port": 25,
+    "RequireAuthentication": true,
+    "Username": "cysun@localhost.localdomain",
+    "Password": "abcd",
+    "SenderName": "AIS Admin",
+    "SenderEmail": "cysun@localhost.localdomain"
   },
   "Serilog": {
     "Using": [

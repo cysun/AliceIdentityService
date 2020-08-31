@@ -1,40 +1,76 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity.UI.Services;
+using AliceIdentityService.Models;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using SendGrid;
-using SendGrid.Helpers.Mail;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using MimeKit;
+using Scriban;
 
 namespace AliceIdentityService.Services
 {
-    public class EmailSender : IEmailSender
+    public class EmailSettings
     {
-        private readonly string senderName;
-        private readonly string senderEmail;
-        private readonly string apiKey;
+        public string AppUrl { get; set; }
+        public string Host { get; set; }
+        public int Port { get; set; }
+        public bool RequireAuthentication { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string SenderName { get; set; }
+        public string SenderEmail { get; set; }
+    }
 
-        public EmailSender(IConfiguration configuration)
+    public class EmailSender
+    {
+        private readonly EmailSettings _settings;
+        private readonly string _templateFolder;
+
+        private ILogger<EmailSender> _logger;
+
+        public EmailSender(IWebHostEnvironment env, IOptions<EmailSettings> settings, ILogger<EmailSender> logger)
         {
-            senderName = configuration["SendGrid:SenderName"];
-            senderEmail = configuration["SendGrid:SenderEmail"];
-            apiKey = configuration["SendGrid:ApiKey"];
+            _templateFolder = $"{env.ContentRootPath}/EmailTemplates";
+            _settings = settings.Value;
+            _logger = logger;
         }
 
-        public Task SendEmailAsync(string email, string subject, string htmlMessage)
+        public MimeMessage CreateEmailVerificationMessage(User user, string verificationLink)
         {
-            var client = new SendGridClient(apiKey);
-            var msg = new SendGridMessage()
+            var msg = new MimeMessage();
+            msg.From.Add(new MailboxAddress(_settings.SenderName, _settings.SenderEmail));
+            msg.To.Add(new MailboxAddress(user.Name, user.Email));
+            msg.Subject = "Alice Identity Service - Email Verification";
+
+            var template = Template.Parse(File.ReadAllText($"{_templateFolder}/EmailVerification.Body.txt"));
+            msg.Body = new TextPart("html")
             {
-                From = new EmailAddress(senderEmail, senderName),
-                Subject = subject,
-                HtmlContent = htmlMessage
+                Text = template.Render(new { link = $"{_settings.AppUrl}{verificationLink}" })
             };
-            msg.AddTo(new EmailAddress(email));
-            msg.SetClickTracking(false, false);
-            return client.SendEmailAsync(msg);
+
+            _logger.LogInformation("Email verification message created for user {user}", user.UserName);
+
+            return msg;
+        }
+
+        public async Task SendAsync(MimeMessage msg)
+        {
+            using (var client = new SmtpClient())
+            {
+                client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+                await client.ConnectAsync(_settings.Host, _settings.Port, SecureSocketOptions.None);
+                if (_settings.RequireAuthentication)
+                    await client.AuthenticateAsync(_settings.Username, _settings.Password);
+                await client.SendAsync(msg);
+                await client.DisconnectAsync(true);
+            }
         }
     }
 }

@@ -11,7 +11,9 @@ and [IdentityServer4](http://docs.identityserver.io/en/latest/index.html).
 
 ## Generate DB Scripts
 
+    dotnet ef migrations add -c AppDbContext InitialSchema
     dotnet ef migrations add -c ConfigurationDbContext ConfigurationDbSchema
     dotnet ef migrations add -c PersistedGrantDbContext PersistedGrantDbSchema
+    dotnet ef migrations script -c AppDbContext -o Scripts/CreateSchema.sql
     dotnet ef migrations script -c ConfigurationDbContext -o Scripts/ConfigurationDb.sql
     dotnet ef migrations script -c PersistedGrantDbContext -o Scripts/PersistedGrantDb.sql

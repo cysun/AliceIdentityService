@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using AliceIdentityService.Models;
+using AliceIdentityService.Security;
 using AliceIdentityService.Services;
-using AliceIdentityService.ViewModels;
 using IdentityServer4;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AliceIdentityService.Controllers
 {
-    [Authorize(Policy = "IsAdmin")]
+    [Authorize(Policy = Policy.IsAdministrator)]
     public class ClientsController : Controller
     {
         private readonly ClientService _clientService;
@@ -53,5 +55,25 @@ namespace AliceIdentityService.Controllers
             _clientService.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
+    }
+}
+
+namespace AliceIdentityService.Models
+{
+    public class ClientInputModel
+    {
+        [Required]
+        [Display(Name = "Client Name")]
+        public string Name { get; set; }
+
+        [Required]
+        [Display(Name = "Client ID")]
+        public string Id { get; set; }
+
+        [Display(Name = "Client Secret")]
+        public string Secret { get; set; }
+
+        [Display(Name = "Redirect URL")]
+        public string RedirectUrl { get; set; }
     }
 }

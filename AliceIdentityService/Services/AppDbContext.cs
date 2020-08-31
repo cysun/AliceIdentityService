@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AliceIdentityService.Services
 {
-    public class AppDbContext : IdentityDbContext<ApplicationUser>
+    public class AppDbContext : IdentityDbContext<User>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
