@@ -1,5 +1,6 @@
 ﻿using AliceIdentityService.Models;
 using AutoMapper;
+using IdentityServer4.EntityFramework.Entities;
 
 namespace SciCAFE.NET.Services
 {
@@ -10,8 +11,10 @@ namespace SciCAFE.NET.Services
             CreateMap<RegistrationInputModel, User>();
             CreateMap<NewUserInputModel, User>();
             CreateMap<User, EditUserInputModel>();
-            CreateMap<User, UserViewModel>();
             CreateMap<EditUserInputModel, User>();
+            CreateMap<User, UserViewModel>();
+            CreateMap<ApiScopeInputModel, ApiScope>();
+            CreateMap<ApiScope, ApiScopeInputModel>();
         }
     }
 }

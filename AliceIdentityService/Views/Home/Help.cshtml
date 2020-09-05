@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Help";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active">Help</li>
+    </ol>
+</nav>
+
+<div class="accordion" id="helpAccordian">
+    <div class="card">
+        <div class="card-header" id="apiScope">
+            <button class="btn btn-link btn-block text-left shadow-none" type="button"
+                    data-toggle="collapse" data-target="#collapse-apiScope"
+                    aria-expanded="true" aria-controls="collapseOne">
+                ApiScope
+            </button>
+        </div>
+        <div id="collapse-apiScope" class="collapse" aria-labelledby="apiScope" data-parent="#helpAccordian">
+            <div class="card-body">
+                <p>
+                    There are two basic types of scopes, both are represented with <code>ApiScope</code>
+                    in the system.
+                </p>
+                <p>
+                    We'll call the first type of scopes <em>API Scopes</em>. An API scope represents
+                    a web API. It can be added to the <code>allowedScopes</code> of a client to indicate
+                    that the client can access the web API. The name of the scope will be included the
+                    <code>scope</code> claim of the access token, and the web API should check if the
+                    user is authenticated and if the scope claim has the right value.
+                </p>
+                <p>
+                    We'll call the second type of scopes <em>Access Scopes</em>. An accesss scope represents
+                    some access privilege such as <samp>read</samp>, <samp>write</samp>, <samp>delete</samp>,
+                    and so on. We can assign access scopes together with an API scope to a client, which can
+                    then be interpreted by the web API as the client only having the asssigned access privileges.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

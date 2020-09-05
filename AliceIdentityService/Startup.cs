@@ -84,6 +84,7 @@ namespace AliceIdentityService
             services.AddScoped<EmailSender>();
 
             services.AddScoped<UserService>();
+            services.AddScoped<ApiScopeService>();
             services.AddScoped<ClientService>();
         }
 

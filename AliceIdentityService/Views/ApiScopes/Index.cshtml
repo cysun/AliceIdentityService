@@ -1,0 +1,36 @@
+﻿@model List<ApiScope>
+
+<nav>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active align-bottom">ApiScopes</li>
+        <li class="ml-auto"><a asp-action="Add" class="btn btn-primary btn-sm">Add</a></li>
+    </ol>
+</nav>
+
+<table class="table table-hover">
+    <thead>
+        <tr><th>Name</th><th class="d-none d-md-table-cell">Display Name</th><th></th></tr>
+    </thead>
+    <tbody>
+        @foreach (var apiScope in Model)
+        {
+            <tr>
+                <td>
+                    @if (apiScope.Enabled)
+                    {
+                        <samp>@apiScope.Name</samp>
+                    }
+                    else
+                    {
+                        <samp class="text-danger">@apiScope.Name</samp>
+                    }
+                </td>
+                <td class="d-none d-md-table-cell">@apiScope.DisplayName</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@apiScope.Id"
+                       class="btn btn-primary btn-sm">Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
