@@ -10,9 +10,9 @@ namespace AliceIdentityService.Services
 {
     public class ClientService
     {
-        private readonly ConfigurationDbContext _db;
+        private readonly AppConfigurationDbContext _db;
 
-        public ClientService(ConfigurationDbContext db)
+        public ClientService(AppConfigurationDbContext db)
         {
             _db = db;
         }

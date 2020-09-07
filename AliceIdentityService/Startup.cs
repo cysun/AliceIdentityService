@@ -54,7 +54,7 @@ namespace AliceIdentityService
                 options.UserInteraction.LoginUrl = "/Account/Login";
                 options.UserInteraction.LogoutUrl = "/Account/Logout";
             })
-            .AddConfigurationStore(options =>
+            .AddConfigurationStore<AppConfigurationDbContext>(options =>
             {
                 options.ConfigureDbContext = b => b.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"),
                     sql => sql.MigrationsAssembly(migrationsAssembly));
@@ -85,6 +85,7 @@ namespace AliceIdentityService
 
             services.AddScoped<UserService>();
             services.AddScoped<ApiScopeService>();
+            services.AddScoped<IdentityResourceService>();
             services.AddScoped<ClientService>();
         }
 

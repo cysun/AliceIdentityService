@@ -42,5 +42,5 @@ CREATE INDEX "IX_PersistedGrants_SubjectId_ClientId_Type" ON "PersistedGrants" (
 CREATE INDEX "IX_PersistedGrants_SubjectId_SessionId_Type" ON "PersistedGrants" ("SubjectId", "SessionId", "Type");
 
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20200626042455_PersistedGrantDbSchema', '3.1.5');
+VALUES ('20200907000014_PersistedGrantDbSchema', '3.1.7');
 

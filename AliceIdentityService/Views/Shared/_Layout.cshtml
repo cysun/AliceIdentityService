@@ -26,8 +26,16 @@
                     <ul class="navbar-nav mr-auto">
                         @if ((await AuthorizationService.AuthorizeAsync(User, Policy.IsAdministrator)).Succeeded)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="ApiScopes" asp-action="Index">ApiScopes</a>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="resourcesDropdown" role="button"
+                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Resources
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="resourcesDropdown">
+                                    <a class="dropdown-item" asp-controller="IdentityResources" asp-action="Index">Identity Resources</a>
+                                    <a class="dropdown-item" href="#">API Resources</a>
+                                    <a class="dropdown-item" asp-controller="ApiScopes" asp-action="Index">API Scopes</a>
+                                </div>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Clients" asp-action="Index">Clients</a>

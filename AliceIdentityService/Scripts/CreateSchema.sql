@@ -30,7 +30,7 @@ CREATE TABLE "AspNetUsers" (
     "AccessFailedCount" integer NOT NULL,
     "FirstName" character varying(255) NOT NULL,
     "LastName" character varying(255) NOT NULL,
-    "Nickname" character varying(50) NOT NULL,
+    "Nickname" character varying(255) NOT NULL,
     "IsAdministrator" boolean NOT NULL,
     CONSTRAINT "PK_AspNetUsers" PRIMARY KEY ("Id")
 );
@@ -94,5 +94,5 @@ CREATE INDEX "EmailIndex" ON "AspNetUsers" ("NormalizedEmail");
 CREATE UNIQUE INDEX "UserNameIndex" ON "AspNetUsers" ("NormalizedUserName");
 
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20200830232015_InitialSchema', '3.1.7');
+VALUES ('20200906235950_InitialSchema', '3.1.7');
 

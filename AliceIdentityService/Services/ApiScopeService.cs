@@ -10,9 +10,9 @@ namespace AliceIdentityService.Services
 {
     public class ApiScopeService
     {
-        private readonly ConfigurationDbContext _db;
+        private readonly AppConfigurationDbContext _db;
 
-        public ApiScopeService(ConfigurationDbContext db)
+        public ApiScopeService(AppConfigurationDbContext db)
         {
             _db = db;
         }

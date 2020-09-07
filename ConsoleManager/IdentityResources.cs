@@ -15,7 +15,9 @@ namespace ConsoleManager
             {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
-                new IdentityResources.Email()
+                new IdentityResources.Email(),
+                new IdentityResources.Phone(),
+                new IdentityResources.Address()
             };
             var defaultResources = defaultResourceList.ToDictionary(r => r.Name, r => r);
 
