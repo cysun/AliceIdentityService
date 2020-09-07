@@ -15,6 +15,10 @@ namespace SciCAFE.NET.Services
             CreateMap<User, UserViewModel>();
             CreateMap<ApiScopeInputModel, ApiScope>();
             CreateMap<ApiScope, ApiScopeInputModel>();
+            CreateMap<IdentityResource, IdentityResourceInputModel>();
+            CreateMap<IdentityResourceInputModel, IdentityResource>();
+            CreateMap<IdentityResourceClaimInputModel, IdentityResourceClaim>();
+            CreateMap<IdentityResourceClaim, IdentityResourceClaimInputModel>();
         }
     }
 }

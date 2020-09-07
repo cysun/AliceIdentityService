@@ -27,7 +27,11 @@ namespace ConsoleManager
             foreach (var defaultResource in defaultResources)
             {
                 if (!resources.ContainsKey(defaultResource.Key))
-                    configDbContext.IdentityResources.Add(defaultResource.Value.ToEntity());
+                {
+                    var resource = defaultResource.Value.ToEntity();
+                    resource.NonEditable = true;
+                    configDbContext.IdentityResources.Add(resource);
+                }
             }
             configDbContext.SaveChanges();
         }

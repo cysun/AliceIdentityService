@@ -14,7 +14,7 @@
             <button class="btn btn-link btn-block text-left shadow-none" type="button"
                     data-toggle="collapse" data-target="#collapse-apiScope"
                     aria-expanded="true" aria-controls="collapseOne">
-                ApiScope
+                API Scope
             </button>
         </div>
         <div id="collapse-apiScope" class="collapse" aria-labelledby="apiScope" data-parent="#helpAccordian">
@@ -35,6 +35,26 @@
                     some access privilege such as <samp>read</samp>, <samp>write</samp>, <samp>delete</samp>,
                     and so on. We can assign access scopes together with an API scope to a client, which can
                     then be interpreted by the web API as the client only having the asssigned access privileges.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header" id="identityResource">
+            <button class="btn btn-link btn-block text-left shadow-none" type="button"
+                    data-toggle="collapse" data-target="#collapse-identityResource"
+                    aria-expanded="true" aria-controls="collapseOne">
+                Identity Resource
+            </button>
+        </div>
+        <div id="collapse-identityResource" class="collapse" aria-labelledby="identityResource" data-parent="#helpAccordian">
+            <div class="card-body">
+                <p>
+                    An identity resource is a named group of claims. In the OpenID Connection specification this is called
+                    <em>scope</em>, and one of the standard scopes is <samp>oidc</samp> which contains the
+                    <samp>sub</samp> claim. Identity Server 4 defines a few other identiy resources in
+                    <a href="https://github.com/IdentityServer/IdentityServer4/blob/main/src/IdentityServer4/src/Models/IdentityResources.cs">IdentityResources</a>.
+                    AIS pre-creates these resources in <code>ConsoleManager</code>.
                 </p>
             </div>
         </div>

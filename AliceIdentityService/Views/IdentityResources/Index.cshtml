@@ -1,0 +1,45 @@
+﻿@model List<IdentityResource>
+
+<nav>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active align-bottom">Identity Resources</li>
+        <li class="ml-auto"><a asp-action="Add" class="btn btn-primary btn-sm">Add</a></li>
+    </ol>
+</nav>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Display Name</th>
+            <th class="d-none d-lg-table-cell">Description</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var resource in Model)
+        {
+            <tr>
+                <td>
+                    @if (resource.Enabled)
+                    {
+                        <a asp-action="View" asp-route-id="@resource.Id"><samp>@resource.Name</samp></a>
+                    }
+                    else
+                    {
+                        <a asp-action="View"><samp class="text-danger">@resource.Name</samp></a>
+                    }
+                </td>
+                <td>@resource.DisplayName</td>
+                <td class="d-none d-lg-table-cell">@resource.Description</td>
+                <td>
+                    @if (!resource.NonEditable)
+                    {
+                        <a asp-action="Edit" asp-route-id="@resource.Id"
+                           class="btn btn-primary btn-sm">Edit</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

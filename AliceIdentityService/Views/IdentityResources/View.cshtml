@@ -1,0 +1,34 @@
+﻿@model IdentityResource
+
+<nav>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item align-bottom"><a asp-action="Index">Identity Resources</a></li>
+        <li class="breadcrumb-item active align-bottom">@Model.Name</li>
+        @if (!Model.NonEditable)
+        {
+            <li class="ml-auto"><a href="../@Model.Id/AddClaim" class="btn btn-primary btn-sm">Add Claim</a></li>
+        }
+    </ol>
+</nav>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th colspan="2">Claims</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var claim in Model.UserClaims)
+        {
+            <tr>
+                <td>@claim.Type</td>
+                <td>
+                    @if (!Model.NonEditable)
+                    {
+                        <a href="../@Model.Id/EditClaim/@claim.Id" class="btn btn-primary btn-sm">Edit</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
