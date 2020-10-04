@@ -9,15 +9,16 @@
 
 <table class="table">
     <thead>
-        <tr><th>Name</th><th>Client ID</th><th></th></tr>
+        <tr><th>Name</th><th>Type</th><th>Client ID</th><th></th></tr>
     </thead>
     <tbody>
         @foreach (var client in Model)
         {
             <tr>
                 <td>@client.ClientName</td>
+                <td>@client.GetClientType()</td>
                 <td>@client.ClientId</td>
-                <td><a asp-action="Edit">Edit</a></td>
+                <td><a asp-action="Edit" asp-route-id="@client.Id">Edit</a></td>
             </tr>
         }
     </tbody>

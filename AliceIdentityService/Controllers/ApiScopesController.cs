@@ -40,6 +40,7 @@ namespace AliceIdentityService.Controllers
             return View(new ApiScopeInputModel());
         }
 
+        [HttpPost]
         public IActionResult Add(ApiScopeInputModel input)
         {
             if (!ModelState.IsValid) return View(input);

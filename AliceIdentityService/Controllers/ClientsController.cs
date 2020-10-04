@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using AliceIdentityService.Models;
 using AliceIdentityService.Security;
 using AliceIdentityService.Services;
+using AutoMapper;
 using IdentityServer4;
-using IdentityServer4.Models;
+using IdentityServer4.EntityFramework.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace AliceIdentityService.Controllers
 {
@@ -18,9 +20,14 @@ namespace AliceIdentityService.Controllers
     {
         private readonly ClientService _clientService;
 
-        public ClientsController(ClientService clientService)
+        private readonly IMapper _mapper;
+        private readonly ILogger<ClientsController> _logger;
+
+        public ClientsController(ClientService clientService, IMapper mapper, ILogger<ClientsController> logger)
         {
             _clientService = clientService;
+            _mapper = mapper;
+            _logger = logger;
         }
 
         public IActionResult Index()
@@ -37,43 +44,170 @@ namespace AliceIdentityService.Controllers
         [HttpPost]
         public IActionResult Add(ClientInputModel input)
         {
-            var client = new Client
-            {
-                ClientId = input.Id,
-                ClientName = input.Name,
-                ClientSecrets = { new Secret(input.Secret.Sha256()) },
-                RedirectUris = { input.RedirectUrl },
-                AllowOfflineAccess = true,
-                AllowedScopes = {
-                        IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile,
-                        IdentityServerConstants.StandardScopes.Email
-                    },
-                AllowedGrantTypes = GrantTypes.Code
-            };
+            if (!ModelState.IsValid) return View(input);
+
+            var client = _mapper.Map<Client>(input);
+            client.SetClientType(input.ClientType);
             _clientService.AddClient(client);
             _clientService.SaveChanges();
-            return RedirectToAction(nameof(Index));
+
+            _logger.LogInformation("{user} created client {client}", User.Identity.Name, client.ClientId);
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            var client = _clientService.GetClient(id);
+            if (client == null) return NotFound();
+
+            var input = _mapper.Map<ClientInputModel>(client);
+            input.ClientType = client.GetClientType();
+            return View(input);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(int id, ClientInputModel input)
+        {
+            if (!ModelState.IsValid) return View(input);
+
+            var client = _clientService.GetClient(id);
+            _mapper.Map(input, client);
+            client.SetClientType(input.ClientType);
+            _clientService.SaveChanges();
+
+            _logger.LogInformation("{user} edited client {client}", User.Identity.Name, id);
+
+            return RedirectToAction("Index");
         }
     }
 }
 
 namespace AliceIdentityService.Models
 {
+    public enum ClientType
+    {
+        Native, // mobile, desktop, CLI, and smart device apps running natively
+        SPA, // Single-Page Application - a JavaScript frontend app that uses an API
+        WebApp, // Traditional web application using redirects
+        Noninteractive // CLIs, deamons or services running in backend
+    }
+
     public class ClientInputModel
     {
-        [Required]
-        [Display(Name = "Client Name")]
-        public string Name { get; set; }
+        public bool Enabled { get; set; } = true;
 
         [Required]
-        [Display(Name = "Client ID")]
-        public string Id { get; set; }
+        [MaxLength(200)]
+        [Display(Name = "Client Id")]
+        public string ClientId { get; set; }
 
+        [Required]
+        [MaxLength(200)]
+        [Display(Name = "Protocol Type")]
+        public string ProtocolType { get; set; } = "oidc";
+
+        // List<ClientSecret> <=> string
         [Display(Name = "Client Secret")]
-        public string Secret { get; set; }
+        public string ClientSecrets { get; set; }
 
-        [Display(Name = "Redirect URL")]
-        public string RedirectUrl { get; set; }
+        [Display(Name = "Require Client Secret")]
+        public bool RequireClientSecret { get; set; }
+
+        [MaxLength(200)]
+        [Display(Name = "Client Name")]
+        public string ClientName { get; set; }
+
+        [MaxLength(1000)]
+        public string Description { get; set; }
+
+        [MaxLength(2000)]
+        [Display(Name = "Client URI")]
+        public string ClientUri { get; set; }
+
+        [MaxLength(2000)]
+        [Display(Name = "Logo URI")]
+        public string LogoUri { get; set; }
+
+        [Display(Name = "Require Content")]
+        public bool RequireConsent { get; set; } = false;
+
+        [Display(Name = "Allow Remember Content")]
+        public bool AllowRememberConsent { get; set; } = true;
+
+        [Display(Name = "Always Include User Claims in Id Token")]
+        public bool AlwaysIncludeUserClaimsInIdToken { get; set; }
+
+        // List<ClientGrantType> <=> string
+        [Display(Name = "Allowed Grant Types")]
+        public string AllowedGrantTypes { get; set; } = IdentityServer4.Models.GrantType.AuthorizationCode;
+
+        [Display(Name = "Required PKCE")]
+        public bool RequirePkce { get; set; } = true;
+
+        [Display(Name = "Allow Plain Text PKCE")]
+        public bool AllowPlainTextPkce { get; set; }
+
+        // public bool RequireRequestObject { get; set; }
+        // public bool AllowAccessTokensViaBrowser { get; set; }
+
+        // List<ClientRedirectUri> <=> string, currently only allow one
+        [Display(Name = "Redirect URI")]
+        public string RedirectUris { get; set; }
+
+        // public List<ClientPostLogoutRedirectUri> PostLogoutRedirectUris { get; set; }
+        // public string FrontChannelLogoutUri { get; set; }
+        // public bool FrontChannelLogoutSessionRequired { get; set; } = true;
+        // public string BackChannelLogoutUri { get; set; }
+        // public bool BackChannelLogoutSessionRequired { get; set; } = true;
+        // public bool AllowOfflineAccess { get; set; }
+
+        // public List<ClientScope> AllowedScopes { get; set; }
+
+        [Display(Name = "Identity Token Lifetime")]
+        public int IdentityTokenLifetime { get; set; } = 300;
+
+        // public string AllowedIdentityTokenSigningAlgorithms { get; set; }
+
+        [Display(Name = "Access Token Lifetime")]
+        public int AccessTokenLifetime { get; set; } = 3600;
+
+        [Display(Name = "Authorization Code Lifetime")]
+        public int AuthorizationCodeLifetime { get; set; } = 300;
+
+        // public int? ConsentLifetime { get; set; } = null;
+        // public int AbsoluteRefreshTokenLifetime { get; set; } = 2592000;
+        // public int SlidingRefreshTokenLifetime { get; set; } = 1296000;
+        // public int RefreshTokenUsage { get; set; } = (int)TokenUsage.OneTimeOnly;
+        // public bool UpdateAccessTokenClaimsOnRefresh { get; set; }
+        // public int RefreshTokenExpiration { get; set; } = (int)TokenExpiration.Absolute;
+        // public int AccessTokenType { get; set; } = (int)0; // AccessTokenType.Jwt;
+        // public bool EnableLocalLogin { get; set; } = true;
+        // public List<ClientIdPRestriction> IdentityProviderRestrictions { get; set; }
+        // public bool IncludeJwtId { get; set; }
+        // public List<ClientClaim> Claims { get; set; }
+        // public bool AlwaysSendClientClaims { get; set; }
+        // public string ClientClaimsPrefix { get; set; } = "client_";
+        // public string PairWiseSubjectSalt { get; set; }
+
+        // List<ClientCorsOrigin> <=> string, currently only allow one
+        [Display(Name = "Client CORS Origin")]
+        public string AllowedCorsOrigins { get; set; }
+
+        // public List<ClientProperty> Properties { get; set; }
+
+        // ClientType is stored as a ClientProperty
+        [Required]
+        [Display(Name = "Client Type")]
+        public ClientType ClientType { get; set; } = ClientType.WebApp;
+
+        // public DateTime Created { get; set; } = DateTime.UtcNow;
+        // public DateTime? Updated { get; set; }
+        // public DateTime? LastAccessed { get; set; }
+        // public int? UserSsoLifetime { get; set; }
+        // public string UserCodeType { get; set; }
+        // public int DeviceCodeLifetime { get; set; } = 300;
+        // public bool NonEditable { get; set; }
     }
 }
