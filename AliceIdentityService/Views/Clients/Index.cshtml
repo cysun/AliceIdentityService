@@ -15,7 +15,9 @@
         @foreach (var client in Model)
         {
             <tr>
-                <td>@client.ClientName</td>
+                <td>
+                    <a asp-action="View" asp-route-id="@client.Id">@client.ClientName</a>
+                </td>
                 <td>@client.GetClientType()</td>
                 <td>@client.ClientId</td>
                 <td><a asp-action="Edit" asp-route-id="@client.Id">Edit</a></td>

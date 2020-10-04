@@ -3,7 +3,8 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-action="Index">Clients</a></li>
-        <li class="breadcrumb-item active">@Model.ClientName</li>
+        <li class="breadcrumb-item"><a asp-action="View" asp-route-id="@Model.Id">@Model.ClientName</a></li>
+        <li class="breadcrumb-item active">Edit</li>
     </ol>
 </nav>
 
@@ -42,6 +43,14 @@
             <input asp-for="AllowedCorsOrigins" class="form-control">
         </div>
         <div class="form-group col-md-6">
+            <label asp-for="IdentityTokenLifetime"></label>
+            <input asp-for="IdentityTokenLifetime" class="form-control">
+        </div>
+        <div class="form-group col-md-6">
+            <label asp-for="AccessTokenLifetime"></label>
+            <input asp-for="AccessTokenLifetime" class="form-control">
+        </div>
+        <div class="form-group col-md-6">
             <label asp-for="ClientUri"></label>
             <input asp-for="ClientUri" class="form-control">
         </div>
@@ -54,29 +63,29 @@
             <textarea asp-for="Description" class="form-control"></textarea>
         </div>
     </div>
-    <div class="form-check">
-        <input asp-for="RequireClientSecret" class="form-check-input">
-        <label asp-for="RequireClientSecret" class="form-check-label"></label>
+    <div class="custom-control custom-switch">
+        <input asp-for="RequireClientSecret" class="custom-control-input">
+        <label asp-for="RequireClientSecret" class="custom-control-label"></label>
     </div>
-    <div class="form-check">
-        <input asp-for="AlwaysIncludeUserClaimsInIdToken" class="form-check-input">
-        <label asp-for="AlwaysIncludeUserClaimsInIdToken" class="form-check-label"></label>
+    <div class="custom-control custom-switch">
+        <input asp-for="AlwaysIncludeUserClaimsInIdToken" class="custom-control-input">
+        <label asp-for="AlwaysIncludeUserClaimsInIdToken" class="custom-control-label"></label>
     </div>
-    <div class="form-check">
-        <input asp-for="RequirePkce" class="form-check-input">
-        <label asp-for="RequirePkce" class="form-check-label"></label>
+    <div class="custom-control custom-switch">
+        <input asp-for="RequirePkce" class="custom-control-input">
+        <label asp-for="RequirePkce" class="custom-control-label"></label>
     </div>
-    <div class="form-check">
-        <input asp-for="AllowPlainTextPkce" class="form-check-input">
-        <label asp-for="AllowPlainTextPkce" class="form-check-label"></label>
+    <div class="custom-control custom-switch">
+        <input asp-for="AllowPlainTextPkce" class="custom-control-input">
+        <label asp-for="AllowPlainTextPkce" class="custom-control-label"></label>
     </div>
-    <div class="form-check">
-        <input asp-for="RequireConsent" class="form-check-input">
-        <label asp-for="RequireConsent" class="form-check-label"></label>
+    <div class="custom-control custom-switch">
+        <input asp-for="RequireConsent" class="custom-control-input">
+        <label asp-for="RequireConsent" class="custom-control-label"></label>
     </div>
-    <div class="form-check">
-        <input asp-for="AllowRememberConsent" class="form-check-input">
-        <label asp-for="AllowRememberConsent" class="form-check-label"></label>
+    <div class="custom-control custom-switch mb-3">
+        <input asp-for="AllowRememberConsent" class="custom-control-input">
+        <label asp-for="AllowRememberConsent" class="custom-control-label"></label>
     </div>
     <a asp-action="Index" class="btn btn-secondary mr-2">Cancel</a>
     <button class="btn btn-primary">Save</button>

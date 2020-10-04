@@ -1,0 +1,168 @@
+﻿@model ClientInputModel
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">Clients</a></li>
+        <li class="breadcrumb-item active">@Model.ClientName</li>
+        <li class="ml-auto"><a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-sm">Edit</a></li>
+    </ol>
+</nav>
+
+<ul class="nav nav-tabs" id="clientTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <a class="nav-link active" id="info-tab" data-toggle="tab" href="#info" role="tab"
+           aria-controls="info" aria-selected="true">Basic Info</a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" id="scopes-tab" data-toggle="tab" href="#scopes" role="tab"
+           aria-controls="scopes" aria-selected="false">Scopes</a>
+    </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+        <div class="form-row mt-3">
+            <div class="form-group col-md-6">
+                <label asp-for="ClientType"></label>
+                <span class="form-control">@Model.ClientType</span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="ClientName"></label>
+                <span class="form-control">@Model.ClientName</span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="ClientId"></label>
+                <span class="form-control">@Model.ClientId</span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="ClientSecrets"></label>
+                <span class="form-control">********</span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="ProtocolType"></label>
+                <span class="form-control">@Model.ProtocolType</span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="AllowedGrantTypes"></label>
+                <span class="form-control">@Model.AllowedGrantTypes</span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="RedirectUris"></label>
+                <span class="form-control">@Model.RedirectUris</span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="AllowedCorsOrigins"></label>
+                <span class="form-control">@Model.AllowedCorsOrigins</span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="IdentityTokenLifetime"></label>
+                <span class="form-control">@Model.IdentityTokenLifetime</span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="AccessTokenLifetime"></label>
+                <span class="form-control">@Model.AccessTokenLifetime</span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="ClientUri"></label>
+                <span class="form-control">@Model.ClientUri</span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="LogoUri"></label>
+                <span class="form-control">@Model.LogoUri</span>
+            </div>
+            <div class="col-12 mb-3">
+                <label asp-for="Description"></label>
+                <div class="form-control">@Model.Description</div>
+            </div>
+        </div>
+        <div class="custom-control custom-switch">
+            <input asp-for="RequireClientSecret" class="custom-control-input" disabled>
+            <label asp-for="RequireClientSecret" class="custom-control-label"></label>
+        </div>
+        <div class="custom-control custom-switch">
+            <input asp-for="AlwaysIncludeUserClaimsInIdToken" class="custom-control-input" disabled>
+            <label asp-for="AlwaysIncludeUserClaimsInIdToken" class="custom-control-label"></label>
+        </div>
+        <div class="custom-control custom-switch">
+            <input asp-for="RequirePkce" class="custom-control-input" disabled>
+            <label asp-for="RequirePkce" class="custom-control-label"></label>
+        </div>
+        <div class="custom-control custom-switch">
+            <input asp-for="AllowPlainTextPkce" class="custom-control-input" disabled>
+            <label asp-for="AllowPlainTextPkce" class="custom-control-label"></label>
+        </div>
+        <div class="custom-control custom-switch">
+            <input asp-for="RequireConsent" class="custom-control-input" disabled>
+            <label asp-for="RequireConsent" class="custom-control-label"></label>
+        </div>
+        <div class="custom-control custom-switch mb-3">
+            <input asp-for="AllowRememberConsent" class="custom-control-input" disabled>
+            <label asp-for="AllowRememberConsent" class="custom-control-label"></label>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="scopes" role="tabpanel" aria-labelledby="scopes-tab">
+        <div class="card-deck mt-3">
+            <div class="card">
+                <div class="card-header">
+                    Identity Resources
+                </div>
+                <div class="card-body">
+                    @foreach (var resource in ViewBag.IdentityResources)
+                    {
+                        @if (resource.Enabled)
+                        {
+                            <div class="custom-control custom-switch mb-3">
+                                <input class="custom-control-input" type="checkbox"
+                                       id="idresource-@resource.Id" value="@resource.Name">
+                                <label class="custom-control-label" for="idresource-@resource.Id">
+                                    <samp>@resource.Name</samp>
+                                </label>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    API Scopes
+                </div>
+                <div class="card-body">
+                    @foreach (var apiScope in ViewBag.ApiScopes)
+                    {
+                        <div class="custom-control custom-switch mb-3">
+                            <input class="custom-control-input" type="checkbox"
+                                   id="apiscope-@apiScope.Id" value="@apiScope.Name">
+                            <label class="custom-control-label" for="apiScope-@apiScope.Id">
+                                <samp>@apiScope.Name</samp>
+                            </label>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var allowedScopes = @Html.Raw(Json.Serialize(ViewBag.AllowedScopes));
+        $(function () {
+            $("input[type='checkbox']").each(function () {
+                if (allowedScopes.includes($(this).val()))
+                    $(this).prop("checked", true);
+            });
+            $("input[type='checkbox']").change(function () {
+                var scope = $(this).val();
+                if ($(this).prop("checked"))
+                    $.ajax({
+                        url: `@Context.Request.PathBase/Clients/@Model.Id/AllowedScopes/${scope}`,
+                        method: "put"
+                    });
+                else
+                    $.ajax({
+                        url: `@Context.Request.PathBase/Clients/@Model.Id/AllowedScopes/${scope}`,
+                        method: "delete"
+                    });
+            });
+        })
+    </script>
+}

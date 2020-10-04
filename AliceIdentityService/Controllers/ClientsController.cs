@@ -19,13 +19,18 @@ namespace AliceIdentityService.Controllers
     public class ClientsController : Controller
     {
         private readonly ClientService _clientService;
+        private readonly IdentityResourceService _identityResourceService;
+        private readonly ApiScopeService _apiScopeService;
 
         private readonly IMapper _mapper;
         private readonly ILogger<ClientsController> _logger;
 
-        public ClientsController(ClientService clientService, IMapper mapper, ILogger<ClientsController> logger)
+        public ClientsController(ClientService clientService, IdentityResourceService identityResourceService,
+            ApiScopeService apiScopeService, IMapper mapper, ILogger<ClientsController> logger)
         {
             _clientService = clientService;
+            _identityResourceService = identityResourceService;
+            _apiScopeService = apiScopeService;
             _mapper = mapper;
             _logger = logger;
         }
@@ -33,6 +38,21 @@ namespace AliceIdentityService.Controllers
         public IActionResult Index()
         {
             return View(_clientService.GetClients());
+        }
+
+        [HttpGet]
+        public IActionResult View(int id)
+        {
+            var client = _clientService.GetClient(id);
+            if (client == null) return NotFound();
+
+            ViewBag.IdentityResources = _identityResourceService.GetIdentityResources();
+            ViewBag.ApiScopes = _apiScopeService.GetApiScopes();
+            ViewBag.AllowedScopes = client.AllowedScopes.Select(s => s.Scope).ToList();
+
+            var input = _mapper.Map<ClientInputModel>(client);
+            input.ClientType = client.GetClientType();
+            return View(input);
         }
 
         [HttpGet]
@@ -81,6 +101,42 @@ namespace AliceIdentityService.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpPut("Clients/{id}/AllowedScopes/{scope}")]
+        public IActionResult AddAllowedScope(int id, string scope)
+        {
+            var client = _clientService.GetClient(id);
+            if (client == null) return NotFound();
+
+            var allowedScope = client.AllowedScopes.Where(s => s.Scope == scope).SingleOrDefault();
+            if (allowedScope == null)
+            {
+                client.AllowedScopes.Add(new ClientScope
+                {
+                    Scope = scope
+                });
+                _clientService.SaveChanges();
+                _logger.LogInformation("{user} added {scope} to client {client}", User.Identity.Name, scope, id);
+            }
+
+            return Ok();
+        }
+
+        [HttpDelete("Clients/{id}/AllowedScopes/{scope}")]
+        public IActionResult RemoveAllowedScope(int id, string scope)
+        {
+            var client = _clientService.GetClient(id);
+            if (client == null) return NotFound();
+
+            int removed = client.AllowedScopes.RemoveAll(s => s.Scope == scope);
+            if (removed > 0)
+            {
+                _clientService.SaveChanges();
+                _logger.LogInformation("{user} removed {scope} to client {client}", User.Identity.Name, scope, id);
+            }
+
+            return Ok();
+        }
     }
 }
 
@@ -96,6 +152,8 @@ namespace AliceIdentityService.Models
 
     public class ClientInputModel
     {
+        public int Id { get; set; }
+
         public bool Enabled { get; set; } = true;
 
         [Required]

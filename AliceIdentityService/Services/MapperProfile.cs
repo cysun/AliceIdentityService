@@ -23,7 +23,7 @@ namespace AliceIdentityService.Services
             CreateMap<IdentityResourceClaimInputModel, IdentityResourceClaim>();
             CreateMap<IdentityResourceClaim, IdentityResourceClaimInputModel>();
 
-            CreateMap<ClientInputModel, Client>();
+            CreateMap<ClientInputModel, Client>().ForMember(c => c.Id, opt => opt.Ignore());
             CreateMap<Client, ClientInputModel>();
 
             CreateMap<List<ClientGrantType>, string>()

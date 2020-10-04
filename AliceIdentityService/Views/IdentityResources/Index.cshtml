@@ -27,7 +27,7 @@
                     }
                     else
                     {
-                        <a asp-action="View"><samp class="text-danger">@resource.Name</samp></a>
+                        <a asp-action="View" asp-route-id="@resource.Id"><samp class="text-danger">@resource.Name</samp></a>
                     }
                 </td>
                 <td>@resource.DisplayName</td>
