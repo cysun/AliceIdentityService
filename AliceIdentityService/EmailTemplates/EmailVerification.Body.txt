@@ -2,4 +2,4 @@
 <a href="{{link}}">{{link}}</a>
 
 <p>Thank you!</p>
-<p>SciCAFE Team</p>
+<p>AIS Admin</p>

@@ -11,24 +11,28 @@
     </ol>
 </nav>
 
-<table class="table table-hover">
-    <thead>
-        <tr>
-            <th colspan="2">Claims</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var claim in Model.UserClaims)
-        {
-            <tr>
-                <td>@claim.Type</td>
-                <td>
-                    @if (!Model.NonEditable)
-                    {
-                        <a href="../@Model.Id/EditClaim/@claim.Id" class="btn btn-primary btn-sm">Edit</a>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th colspan="2">Claims</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var claim in Model.UserClaims)
+                {
+                    <tr>
+                        <td>@claim.Type</td>
+                        <td>
+                            @if (!Model.NonEditable)
+                            {
+                                <a href="../@Model.Id/EditClaim/@claim.Id" class="btn btn-primary btn-sm">Edit</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

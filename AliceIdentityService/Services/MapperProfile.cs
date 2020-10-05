@@ -16,14 +16,17 @@ namespace AliceIdentityService.Services
             CreateMap<User, EditUserInputModel>();
             CreateMap<EditUserInputModel, User>();
             CreateMap<User, UserViewModel>();
-            CreateMap<ApiScopeInputModel, ApiScope>();
+
+            CreateMap<ApiScopeInputModel, ApiScope>().ForMember(i => i.Id, opt => opt.Ignore());
             CreateMap<ApiScope, ApiScopeInputModel>();
-            CreateMap<IdentityResourceInputModel, IdentityResource>();
+
+            CreateMap<IdentityResourceInputModel, IdentityResource>().ForMember(i => i.Id, opt => opt.Ignore());
             CreateMap<IdentityResource, IdentityResourceInputModel>();
+
             CreateMap<IdentityResourceClaimInputModel, IdentityResourceClaim>();
             CreateMap<IdentityResourceClaim, IdentityResourceClaimInputModel>();
 
-            CreateMap<ClientInputModel, Client>().ForMember(c => c.Id, opt => opt.Ignore());
+            CreateMap<ClientInputModel, Client>().ForMember(i => i.Id, opt => opt.Ignore());
             CreateMap<Client, ClientInputModel>();
 
             CreateMap<List<ClientGrantType>, string>()
