@@ -52,13 +52,16 @@ namespace AliceIdentityService.Controllers
 
             var user = _mapper.Map<User>(input);
             user.UserName = input.Email;
+            user.Nickname = input.FirstName;
             user.EmailConfirmed = true;
             var result = await _userManager.CreateAsync(user, input.Password);
             if (result.Succeeded)
             {
-                var claims = SecurityUtils.GetAdditionalClaims(user);
-                if (claims.Count > 0)
-                    await _userManager.AddClaimsAsync(user, claims);
+                result = await _userManager.AddClaimsAsync(user, user.Claims());
+                if (!result.Succeeded)
+                {
+                    _logger.LogError("Failed to add user claims", result.Errors);
+                }
 
                 _logger.LogInformation("{user} created account for {newUser}", User.Identity.Name, input.Email);
 
@@ -87,7 +90,6 @@ namespace AliceIdentityService.Controllers
             if (!ModelState.IsValid) return View(input);
 
             var user = _userService.GetUser(id);
-            var oldClaims = SecurityUtils.GetAdditionalClaims(user);
 
             if (!string.IsNullOrWhiteSpace(input.Password))
             {
@@ -100,14 +102,10 @@ namespace AliceIdentityService.Controllers
                 }
             }
 
-            _mapper.Map<EditUserInputModel, User>(input, user);
+            _mapper.Map(input, user);
             _userService.SaveChanges();
 
-            var newClaims = SecurityUtils.GetAdditionalClaims(user);
-            if (oldClaims.Count > 0)
-                await _userManager.RemoveClaimsAsync(user, oldClaims);
-            if (newClaims.Count > 0)
-                await _userManager.AddClaimsAsync(user, newClaims);
+            await UpdateClaims(user);
 
             _logger.LogInformation("{user} edited account {account}", User.Identity.Name, input.Email);
 
@@ -119,6 +117,36 @@ namespace AliceIdentityService.Controllers
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             return await _userManager.ResetPasswordAsync(user, token, newPassword);
         }
+
+        private async Task UpdateClaims(User user)
+        {
+            var claims = await _userManager.GetClaimsAsync(user);
+            var claimsToAdd = new List<Claim>();
+            var claimsToRemove = new List<Claim>();
+            foreach (var userClaim in user.Claims())
+            {
+                var oldUserClaim = claims.Where(c => c.Type == userClaim.Type).SingleOrDefault();
+                if (oldUserClaim == null)
+                    claimsToAdd.Add(userClaim);
+                else if (oldUserClaim.Value != userClaim.Value)
+                {
+                    claimsToRemove.Add(oldUserClaim);
+                    claimsToAdd.Add(userClaim);
+                }
+            }
+
+            var result = await _userManager.RemoveClaimsAsync(user, claimsToRemove);
+            if (!result.Succeeded)
+            {
+                _logger.LogError("Failed to remove user claims", result.Errors);
+            }
+
+            result = await _userManager.AddClaimsAsync(user, claimsToAdd);
+            if (!result.Succeeded)
+            {
+                _logger.LogError("Failed to add user claims", result.Errors);
+            }
+        }
     }
 }
 
@@ -128,23 +156,17 @@ namespace AliceIdentityService.Models
     {
         [Display(Name = "Administrator")]
         public bool IsAdministrator { get; set; }
-
-        [Display(Name = "Event Organizer")]
-        public bool IsEventOrganizer { get; set; }
-
-        [Display(Name = "Event Reviewer")]
-        public bool IsEventReviewer { get; set; }
-
-        [Display(Name = "Reward Provider")]
-        public bool IsRewardProvider { get; set; }
-
-        [Display(Name = "Reward Reviewer")]
-        public bool IsRewardReviewer { get; set; }
     }
 
     public class EditUserInputModel : NewUserInputModel
     {
+        [Required]
+        [MaxLength(255)]
+        [Display(Name = "Nickname")]
+        public string Nickname { get; set; }
+
         [DataType(DataType.Password)]
+        [Display(Name = "Password")]
         new public string Password { get; set; }
 
         [Display(Name = "Email Confirmed")]

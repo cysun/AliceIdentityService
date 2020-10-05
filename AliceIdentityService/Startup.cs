@@ -74,7 +74,8 @@ namespace AliceIdentityService
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(Policy.IsAdministrator, policy => policy.RequireClaim(ClaimType.IsAdministrator, "true"));
+                options.AddPolicy(Policy.IsAdministrator, policy =>
+                    policy.RequireClaim(AliceClaimTypes.IsAdministrator, true.ToString()));
             });
 
             services.AddAutoMapper(config => config.AddProfile<MapperProfile>());

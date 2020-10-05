@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AliceIdentityService.Models;
 using AliceIdentityService.Services;
 using AutoMapper;
+using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -50,12 +52,18 @@ namespace AliceIdentityService.Controllers
             {
                 _logger.LogInformation("New account for {user} created", input.Email);
 
+                result = await _userManager.AddClaimsAsync(user, user.Claims());
+                if (!result.Succeeded)
+                {
+                    _logger.LogError("Failed to add user claims", result.Errors);
+                }
+
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                 var link = Url.Action("ConfirmEmail", "Registration", new
                 {
                     userId = user.Id,
-                    code = code
+                    code
                 });
                 var msg = _emailSender.CreateEmailVerificationMessage(user, link);
                 _ = _emailSender.SendAsync(msg);
@@ -102,22 +110,27 @@ namespace AliceIdentityService.Models
     public class RegistrationInputModel
     {
         [Required]
+        [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
         [Required]
+        [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
         [Required]
         [EmailAddress]
+        [Display(Name = "Email")]
         public string Email { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [Display(Name = "Password")]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Display(Name = "Confirm Password")]
         public string ConfirmPassword { get; set; }
     }
 }

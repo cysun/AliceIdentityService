@@ -1,6 +1,6 @@
 ﻿namespace AliceIdentityService.Security
 {
-    public static class ClaimType
+    public static class AliceClaimTypes
     {
         public const string IsAdministrator = "IsAdministrator";
     }

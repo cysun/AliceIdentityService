@@ -109,9 +109,7 @@ namespace ConsoleManager
                 {
                     var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
                     await userManager.ConfirmEmailAsync(user, token);
-                    if (isAdmin)
-                        await userManager.AddClaimAsync(user,
-                            new System.Security.Claims.Claim(ClaimType.IsAdministrator, "true"));
+                    await userManager.AddClaimsAsync(user, user.Claims());
                 }
                 else
                 {
