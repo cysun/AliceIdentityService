@@ -137,13 +137,17 @@
                     url: `@Context.Request.PathBase/Users/@Model.Id/Claims/${claimType}=${claimValue}`,
                     method: "post",
                     success: function () {
-                        var row = $(`<tr><th>${claimType}</th><td>${claimValue}</td><td></td></tr>`);
-                        var removeBtn = $(`<button data-claim-type=${claimType} data-claim-value=${claimValue}
-                            class='delete btn btn-danger btn-sm'>Remove</button>`);
-                        removeBtn.click(removeClaim(row));
-                        row.filter(":last-child").append(removeBtn);
-                        $("#claimType").val();
-                        $("#claimValue").val();
+                        var row = $(`<tr><th>${claimType}</th><td>${claimValue}</td></tr>`);
+                        var cell = $("<td></td>");
+                        var btn = $(`<button data-claim-type=${claimType} data-claim-value=${claimValue}
+                            class='delete btn btn-danger btn-sm'>Remove</button>`).click(function () {
+                                removeClaim(btn);
+                        });
+                        cell.append(btn);
+                        row.append(cell);
+                        $("#addRow").before(row);
+                        $("#claimType").val("");
+                        $("#claimValue").val("");
                     }
                 });
             }
@@ -161,7 +165,7 @@
         }
         $(function () {
             $(".delete").click(function () {
-                removeClaim($this);
+                removeClaim($(this));
             });
             $("#addBtn").click(function () {
                 addClaim();
