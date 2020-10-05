@@ -74,13 +74,98 @@
         </form>
     </div>
     <div class="tab-pane fade" id="claims" role="tabpanel" aria-labelledby="claims-tab">
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                ...
+        <div class="card-deck mt-3">
+            <div class="card">
+                <div class="card-header">
+                    Account Claims
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tbody>
+                            @foreach (var claim in ViewBag.UserClaims)
+                            {
+                                <tr>
+                                    <th>@claim.Type</th>
+                                    <td>@claim.Value</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    Other Claims
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tbody>
+                            @foreach (var claim in ViewBag.OtherClaims)
+                            {
+                                <tr>
+                                    <th>@claim.Type</th>
+                                    <td>@claim.Value</td>
+                                    <td>
+                                        <button data-claim-type="@claim.Type" data-claim-value="@claim.Value"
+                                                class="delete btn btn-danger btn-sm">
+                                            Remove
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                            <tr id="addRow">
+                                <td><input id="claimType" type="text" class="form-control" /></td>
+                                <td><input id="claimValue" type="text" class="form-control" /></td>
+                                <td><button id="addBtn" class="btn btn-primary btn-sm">Add</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
+</div>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        function addClaim() {
+            var claimType = $("#claimType").val();
+            var claimValue = $("#claimValue").val();
+            if (claimType && claimValue) {
+                $.ajax({
+                    url: `@Context.Request.PathBase/Users/@Model.Id/Claims/${claimType}=${claimValue}`,
+                    method: "post",
+                    success: function () {
+                        var row = $(`<tr><th>${claimType}</th><td>${claimValue}</td><td></td></tr>`);
+                        var removeBtn = $(`<button data-claim-type=${claimType} data-claim-value=${claimValue}
+                            class='delete btn btn-danger btn-sm'>Remove</button>`);
+                        removeBtn.click(removeClaim(row));
+                        row.filter(":last-child").append(removeBtn);
+                        $("#claimType").val();
+                        $("#claimValue").val();
+                    }
+                });
+            }
+        }
+        function removeClaim($element) {
+            var claimType = $element.attr("data-claim-type");
+            var claimValue = $element.attr("data-claim-value");
+            $.ajax({
+                url: `@Context.Request.PathBase/Users/@Model.Id/Claims/${claimType}=${claimValue}`,
+                method: "delete",
+                success: function () {
+                    $element.closest("tr").remove();
+                }
+            });
+        }
+        $(function () {
+            $(".delete").click(function () {
+                removeClaim($this);
+            });
+            $("#addBtn").click(function () {
+                addClaim();
+            });
+        });
+    </script>
 }

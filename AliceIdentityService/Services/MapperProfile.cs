@@ -14,7 +14,7 @@ namespace AliceIdentityService.Services
             CreateMap<RegistrationInputModel, User>();
             CreateMap<NewUserInputModel, User>();
             CreateMap<User, EditUserInputModel>();
-            CreateMap<EditUserInputModel, User>();
+            CreateMap<EditUserInputModel, User>().ForMember(i => i.Id, opt => opt.Ignore());
             CreateMap<User, UserViewModel>();
 
             CreateMap<ApiScopeInputModel, ApiScope>().ForMember(i => i.Id, opt => opt.Ignore());

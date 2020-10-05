@@ -76,10 +76,17 @@ namespace AliceIdentityService.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(string id)
+        public async Task<IActionResult> EditAsync(string id)
         {
             var user = _userService.GetUser(id);
             if (user == null) return NotFound();
+
+            var claims = await _userManager.GetClaimsAsync(user);
+            var userClaims = user.Claims();
+            var userClaimTypes = userClaims.Select(c => c.Type).ToHashSet();
+
+            ViewBag.UserClaims = userClaims;
+            ViewBag.OtherClaims = claims.Where(c => !userClaimTypes.Contains(c.Type)).ToList();
 
             return View(_mapper.Map<EditUserInputModel>(user));
         }
@@ -110,6 +117,50 @@ namespace AliceIdentityService.Controllers
             _logger.LogInformation("{user} edited account {account}", User.Identity.Name, input.Email);
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost("Users/{userId}/Claims/{claimType}={claimValue}")]
+        public async Task<IActionResult> AddClaimAsync(string userId, string claimType, string claimValue)
+        {
+            if (!ModelState.IsValid) return BadRequest();
+
+            var user = _userService.GetUser(userId);
+
+            var result = await _userManager.AddClaimAsync(user, new Claim(claimType, claimValue));
+            if (result.Succeeded)
+            {
+                _logger.LogError("{user} added claim {claimType}={claimValue} to {account}",
+                    User.Identity.Name, claimType, claimValue, userId);
+                return Ok();
+            }
+            else
+            {
+                _logger.LogError("Failed to add claim {claimType}={claimValue} to {account}",
+                        claimType, claimValue, userId, result.Errors);
+                return StatusCode(500);
+            }
+        }
+
+        [HttpDelete("Users/{userId}/Claims/{claimType}={claimValue}")]
+        public async Task<IActionResult> RemoveClaimAsync(string userId, string claimType, string claimValue)
+        {
+            if (!ModelState.IsValid) return BadRequest();
+
+            var user = _userService.GetUser(userId);
+
+            var result = await _userManager.RemoveClaimAsync(user, new Claim(claimType, claimValue));
+            if (result.Succeeded)
+            {
+                _logger.LogError("{user} removed claim {claimType}={claimValue} from {account}",
+                    User.Identity.Name, claimType, claimValue, userId);
+                return Ok();
+            }
+            else
+            {
+                _logger.LogError("Failed to remove claim {claimType}={claimValue} from {account}",
+                        claimType, claimValue, userId, result.Errors);
+                return StatusCode(500);
+            }
         }
 
         private async Task<IdentityResult> ChangePaswordAsync(User user, string newPassword)
@@ -160,6 +211,8 @@ namespace AliceIdentityService.Models
 
     public class EditUserInputModel : NewUserInputModel
     {
+        public string Id { get; set; }
+
         [Required]
         [MaxLength(255)]
         [Display(Name = "Nickname")]
