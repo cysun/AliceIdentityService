@@ -69,44 +69,70 @@ namespace AliceIdentityService.Services
                 });
 
             CreateMap<List<ClientRedirectUri>, string>()
-                .ConvertUsing(source => source == null || source.Count == 0 ? "" : source[0].RedirectUri);
+                .ConvertUsing((source, dest) =>
+                {
+                    if (source == null || source.Count == 0) dest = "";
+                    else
+                    {
+                        dest = source[0].RedirectUri;
+                        for (int i = 1; i < source.Count; ++i)
+                            dest += $", {source[i].RedirectUri}";
+                    }
+                    return dest;
+                });
             CreateMap<string, List<ClientRedirectUri>>()
                 .ConvertUsing((source, dest) =>
                 {
                     if (dest == null) dest = new List<ClientRedirectUri>();
-
-                    if (!string.IsNullOrEmpty(source))
+                    if (string.IsNullOrEmpty(source))
                     {
-                        if (dest.Count == 0)
-                            dest.Add(new ClientRedirectUri
-                            {
-                                RedirectUri = source
-                            });
-                        else
-                            dest[0].RedirectUri = source;
-
+                        dest.Clear();
+                        return dest;
                     }
+
+                    var newUris = source.Split(',').Select(uri => uri.Trim()).ToHashSet();
+                    var oldUris = dest.Select(uri => uri.RedirectUri).ToHashSet();
+                    var uriToRemove = oldUris.Except(newUris);
+                    var uriToAdd = newUris.Except(oldUris);
+                    dest.RemoveAll(uri => uriToRemove.Contains(uri.RedirectUri));
+                    dest.AddRange(uriToAdd.Select(uri => new ClientRedirectUri
+                    {
+                        RedirectUri = uri
+                    }));
                     return dest;
                 });
 
             CreateMap<List<ClientCorsOrigin>, string>()
-                .ConvertUsing(source => source == null || source.Count == 0 ? "" : source[0].Origin);
+                .ConvertUsing((source, dest) =>
+                {
+                    if (source == null || source.Count == 0) dest = "";
+                    else
+                    {
+                        dest = source[0].Origin;
+                        for (int i = 1; i < source.Count; ++i)
+                            dest += $", {source[i].Origin}";
+                    }
+                    return dest;
+                });
             CreateMap<string, List<ClientCorsOrigin>>()
                 .ConvertUsing((source, dest) =>
                 {
                     if (dest == null) dest = new List<ClientCorsOrigin>();
-
-                    if (!string.IsNullOrEmpty(source))
+                    if (string.IsNullOrEmpty(source))
                     {
-                        if (dest.Count == 0)
-                            dest.Add(new ClientCorsOrigin
-                            {
-                                Origin = source
-                            });
-                        else
-                            dest[0].Origin = source;
-
+                        dest.Clear();
+                        return dest;
                     }
+
+                    var newOrigins = source.Split(',').Select(uri => uri.Trim()).ToHashSet();
+                    var oldOrigins = dest.Select(uri => uri.Origin).ToHashSet();
+                    var originsToRemove = oldOrigins.Except(newOrigins);
+                    var originsToAdd = newOrigins.Except(oldOrigins);
+                    dest.RemoveAll(origin => originsToRemove.Contains(origin.Origin));
+                    dest.AddRange(originsToAdd.Select(origin => new ClientCorsOrigin
+                    {
+                        Origin = origin
+                    }));
                     return dest;
                 });
         }
