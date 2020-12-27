@@ -68,12 +68,30 @@ namespace AliceIdentityService.Controllers
 
             var client = _mapper.Map<Client>(input);
             client.SetClientType(input.ClientType);
+            if (input.ClientType != ClientType.Noninteractive)
+            {
+                client.AllowedScopes = new List<ClientScope>
+                {
+                    new ClientScope
+                    {
+                        Scope = IdentityServerConstants.StandardScopes.OpenId
+                    },
+                    new ClientScope
+                    {
+                        Scope = IdentityServerConstants.StandardScopes.Profile
+                    },
+                    new ClientScope
+                    {
+                        Scope = IdentityServerConstants.StandardScopes.Email
+                    }
+                };
+            }
             _clientService.AddClient(client);
             _clientService.SaveChanges();
 
             _logger.LogInformation("{user} created client {client}", User.Identity.Name, client.ClientId);
 
-            return RedirectToAction("Index");
+            return Redirect($"Edit/{client.Id}#scopes");
         }
 
         [HttpGet]
@@ -81,6 +99,10 @@ namespace AliceIdentityService.Controllers
         {
             var client = _clientService.GetClient(id);
             if (client == null) return NotFound();
+
+            ViewBag.IdentityResources = _identityResourceService.GetIdentityResources();
+            ViewBag.ApiScopes = _apiScopeService.GetApiScopes();
+            ViewBag.AllowedScopes = client.AllowedScopes.Select(s => s.Scope).ToList();
 
             var input = _mapper.Map<ClientInputModel>(client);
             input.ClientType = client.GetClientType();

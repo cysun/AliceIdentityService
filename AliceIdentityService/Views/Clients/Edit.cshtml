@@ -8,96 +8,150 @@
     </ol>
 </nav>
 
-<form method="post">
-    <div class="form-row">
-        <div class="form-group col-md-6">
-            <label asp-for="ClientType"></label>
-            <select class="form-control" asp-for="ClientType" asp-items="Html.GetEnumSelectList<ClientType>()"></select>
-        </div>
-        <div class="form-group col-md-6">
-            <label asp-for="ClientName"></label>
-            <input asp-for="ClientName" class="form-control">
-        </div>
-        <div class="form-group col-md-6">
-            <label asp-for="ClientId"></label>
-            <input asp-for="ClientId" class="form-control">
-        </div>
-        <div class="form-group col-md-6">
-            <label id="secretToggle" asp-for="ClientSecrets"></label>
-            <input asp-for="ClientSecrets" class="form-control" disabled>
-        </div>
-        <div class="form-group col-md-6">
-            <label asp-for="ProtocolType"></label>
-            <input asp-for="ProtocolType" class="form-control">
-        </div>
-        <div class="form-group col-md-6">
-            <label asp-for="AllowedGrantTypes"></label>
-            <input asp-for="AllowedGrantTypes" class="form-control">
-        </div>
-        <div class="form-group col-12">
-            <label asp-for="RedirectUris"></label>
-            <input asp-for="RedirectUris" class="form-control">
-            <small id="RedirectUrisHelp" class="form-text text-muted">
-                Use comma to separate multiple URIs, e.g. "uri1,uri2".
-            </small>
-        </div>
-        <div class="form-group col-12">
-            <label asp-for="AllowedCorsOrigins"></label>
-            <input asp-for="AllowedCorsOrigins" class="form-control">
-            <small id="AllowedCorsOriginsHelp" class="form-text text-muted">
-                Use comma to separate multiple origins, e.g. "origin1,origin2". Note that
-                origins (e.g. https://foo:123) are not URLs (e.g. https://foo:123/).
-            </small>
-        </div>
-        <div class="form-group col-md-6">
-            <label asp-for="IdentityTokenLifetime"></label>
-            <input asp-for="IdentityTokenLifetime" class="form-control">
-        </div>
-        <div class="form-group col-md-6">
-            <label asp-for="AccessTokenLifetime"></label>
-            <input asp-for="AccessTokenLifetime" class="form-control">
-        </div>
-        <div class="form-group col-md-6">
-            <label asp-for="ClientUri"></label>
-            <input asp-for="ClientUri" class="form-control">
-        </div>
-        <div class="form-group col-md-6">
-            <label asp-for="LogoUri"></label>
-            <input asp-for="LogoUri" class="form-control">
-        </div>
-        <div class="col-12 mb-3">
-            <label asp-for="Description"></label>
-            <textarea asp-for="Description" class="form-control"></textarea>
+<ul class="nav nav-tabs" id="clientTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <a class="nav-link active" id="info-tab" data-toggle="tab" href="#info" role="tab"
+           aria-controls="info" aria-selected="true">Basic Info</a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" id="scopes-tab" data-toggle="tab" href="#scopes" role="tab"
+           aria-controls="scopes" aria-selected="false">Scopes</a>
+    </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active mt-3" id="info" role="tabpanel" aria-labelledby="info-tab">
+        <form method="post">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="ClientType"></label>
+                    <select class="form-control" asp-for="ClientType" asp-items="Html.GetEnumSelectList<ClientType>()"></select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="ClientName"></label>
+                    <input asp-for="ClientName" class="form-control">
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="ClientId"></label>
+                    <input asp-for="ClientId" class="form-control">
+                </div>
+                <div class="form-group col-md-6">
+                    <label id="secretToggle" asp-for="ClientSecrets"></label>
+                    <input asp-for="ClientSecrets" class="form-control" disabled>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="ProtocolType"></label>
+                    <input asp-for="ProtocolType" class="form-control">
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="AllowedGrantTypes"></label>
+                    <input asp-for="AllowedGrantTypes" class="form-control">
+                </div>
+                <div class="form-group col-12">
+                    <label asp-for="RedirectUris"></label>
+                    <input asp-for="RedirectUris" class="form-control">
+                    <small id="RedirectUrisHelp" class="form-text text-muted">
+                        Use comma to separate multiple URIs, e.g. "uri1,uri2".
+                    </small>
+                </div>
+                <div class="form-group col-12">
+                    <label asp-for="AllowedCorsOrigins"></label>
+                    <input asp-for="AllowedCorsOrigins" class="form-control">
+                    <small id="AllowedCorsOriginsHelp" class="form-text text-muted">
+                        Use comma to separate multiple origins, e.g. "origin1,origin2". Note that
+                        origins (e.g. https://foo:123) are not URLs (e.g. https://foo:123/).
+                    </small>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="IdentityTokenLifetime"></label>
+                    <input asp-for="IdentityTokenLifetime" class="form-control">
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="AccessTokenLifetime"></label>
+                    <input asp-for="AccessTokenLifetime" class="form-control">
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="ClientUri"></label>
+                    <input asp-for="ClientUri" class="form-control">
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="LogoUri"></label>
+                    <input asp-for="LogoUri" class="form-control">
+                </div>
+                <div class="col-12 mb-3">
+                    <label asp-for="Description"></label>
+                    <textarea asp-for="Description" class="form-control"></textarea>
+                </div>
+            </div>
+            <div class="custom-control custom-switch">
+                <input asp-for="RequireClientSecret" class="custom-control-input">
+                <label asp-for="RequireClientSecret" class="custom-control-label"></label>
+            </div>
+            <div class="custom-control custom-switch">
+                <input asp-for="AlwaysIncludeUserClaimsInIdToken" class="custom-control-input">
+                <label asp-for="AlwaysIncludeUserClaimsInIdToken" class="custom-control-label"></label>
+            </div>
+            <div class="custom-control custom-switch">
+                <input asp-for="RequirePkce" class="custom-control-input">
+                <label asp-for="RequirePkce" class="custom-control-label"></label>
+            </div>
+            <div class="custom-control custom-switch">
+                <input asp-for="AllowPlainTextPkce" class="custom-control-input">
+                <label asp-for="AllowPlainTextPkce" class="custom-control-label"></label>
+            </div>
+            <div class="custom-control custom-switch">
+                <input asp-for="RequireConsent" class="custom-control-input">
+                <label asp-for="RequireConsent" class="custom-control-label"></label>
+            </div>
+            <div class="custom-control custom-switch mb-3">
+                <input asp-for="AllowRememberConsent" class="custom-control-input">
+                <label asp-for="AllowRememberConsent" class="custom-control-label"></label>
+            </div>
+            <a asp-action="Index" class="btn btn-secondary mr-2">Cancel</a>
+            <button class="btn btn-primary">Save</button>
+        </form>
+    </div>
+    <div class="tab-pane fade mt-3" id="scopes" role="tabpanel" aria-labelledby="scopes-tab">
+        <div class="card-deck">
+            <div class="card">
+                <div class="card-header">
+                    Identity Resources
+                </div>
+                <div class="card-body">
+                    @foreach (var resource in ViewBag.IdentityResources)
+                    {
+                        @if (resource.Enabled)
+                        {
+                            <div class="custom-control custom-switch mb-3">
+                                <input class="custom-control-input scope" type="checkbox"
+                                       id="idresource-@resource.Id" value="@resource.Name">
+                                <label class="custom-control-label" for="idresource-@resource.Id">
+                                    <samp>@resource.Name</samp>
+                                </label>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    API Scopes
+                </div>
+                <div class="card-body">
+                    @foreach (var apiScope in ViewBag.ApiScopes)
+                    {
+                        <div class="custom-control custom-switch mb-3">
+                            <input class="custom-control-input scope" type="checkbox"
+                                   id="apiscope-@apiScope.Id" value="@apiScope.Name">
+                            <label class="custom-control-label" for="apiscope-@apiScope.Id">
+                                <samp>@apiScope.Name</samp>
+                            </label>
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
     </div>
-    <div class="custom-control custom-switch">
-        <input asp-for="RequireClientSecret" class="custom-control-input">
-        <label asp-for="RequireClientSecret" class="custom-control-label"></label>
-    </div>
-    <div class="custom-control custom-switch">
-        <input asp-for="AlwaysIncludeUserClaimsInIdToken" class="custom-control-input">
-        <label asp-for="AlwaysIncludeUserClaimsInIdToken" class="custom-control-label"></label>
-    </div>
-    <div class="custom-control custom-switch">
-        <input asp-for="RequirePkce" class="custom-control-input">
-        <label asp-for="RequirePkce" class="custom-control-label"></label>
-    </div>
-    <div class="custom-control custom-switch">
-        <input asp-for="AllowPlainTextPkce" class="custom-control-input">
-        <label asp-for="AllowPlainTextPkce" class="custom-control-label"></label>
-    </div>
-    <div class="custom-control custom-switch">
-        <input asp-for="RequireConsent" class="custom-control-input">
-        <label asp-for="RequireConsent" class="custom-control-label"></label>
-    </div>
-    <div class="custom-control custom-switch mb-3">
-        <input asp-for="AllowRememberConsent" class="custom-control-input">
-        <label asp-for="AllowRememberConsent" class="custom-control-label"></label>
-    </div>
-    <a asp-action="Index" class="btn btn-secondary mr-2">Cancel</a>
-    <button class="btn btn-primary">Save</button>
-</form>
-
+</div>
 @section Scripts{
     <script>
         // From https://stackoverflow.com/questions/105034/how-to-create-guid-uuid
@@ -106,6 +160,7 @@
                 (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
             );
         }
+        var allowedScopes = @Html.Raw(Json.Serialize(ViewBag.AllowedScopes));
         $(function () {
             $("#secretToggle").click(function () {
                 var clientSecret = $("#ClientSecrets");
@@ -126,6 +181,26 @@
                     $("#ClientSecrets").val(uuidv4());
                 }
             });
+            $("input.scope").each(function () {
+                if (allowedScopes.includes($(this).val()))
+                    $(this).prop("checked", true);
+            });
+            $("input.scope").change(function () {
+                var scope = $(this).val();
+                if ($(this).prop("checked"))
+                    $.ajax({
+                        url: `@Context.Request.PathBase/Clients/@Model.Id/AllowedScopes/${scope}`,
+                        method: "put"
+                    });
+                else
+                    $.ajax({
+                        url: `@Context.Request.PathBase/Clients/@Model.Id/AllowedScopes/${scope}`,
+                        method: "delete"
+                    });
+            });
+
+            var hash = window.location.hash;
+            if(hash) $(`a[href="${hash}"]`).tab("show");
         });
     </script>
 }

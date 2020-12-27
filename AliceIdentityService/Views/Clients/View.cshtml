@@ -19,8 +19,8 @@
     </li>
 </ul>
 <div class="tab-content" id="myTabContent">
-    <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
-        <div class="form-row mt-3">
+    <div class="tab-pane fade show active mt-3" id="info" role="tabpanel" aria-labelledby="info-tab">
+        <div class="form-row">
             <div class="form-group col-md-6">
                 <label asp-for="ClientType"></label>
                 <span class="form-control">@Model.ClientType</span>
@@ -99,8 +99,8 @@
             <label asp-for="AllowRememberConsent" class="custom-control-label"></label>
         </div>
     </div>
-    <div class="tab-pane fade" id="scopes" role="tabpanel" aria-labelledby="scopes-tab">
-        <div class="card-deck mt-3">
+    <div class="tab-pane fade mt-3" id="scopes" role="tabpanel" aria-labelledby="scopes-tab">
+        <div class="card-deck">
             <div class="card">
                 <div class="card-header">
                     Identity Resources
